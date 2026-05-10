@@ -16,17 +16,19 @@ vendor/
 
 # OS files
 .DS_Store
-<<<<<<< /home/m/Projects/migrable/tmpy28r3prt.ours
 Thumbs.db
-=======
-coverage/
-dist/
-*.egg-info/
+
+# rlsbl
 .rlsbl-notes-*.tmp
 .rlsbl/lock
+
+# Secrets and local config
 .credentials.json
 .*-cache.json
 .env
 .env.local
 *.local-only
->>>>>>> /home/m/Projects/migrable/tmpurdh7h3k.theirs
+
+# Other
+coverage/
+*.egg-info/
