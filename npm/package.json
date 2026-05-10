@@ -1,6 +1,6 @@
 {
   "name": "migrable",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Declarative config file migrations for TOML",
   "license": "MIT",
   "repository": "github:smm-h/migrable",
