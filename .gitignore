@@ -35,3 +35,4 @@ docs/_build/
 # Other
 coverage/
 *.egg-info/
+.wrangler/
