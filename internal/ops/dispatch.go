@@ -20,9 +20,20 @@ func Execute(doc *tomledit.DocumentNode, op Op) error {
 		return ExecAddCollection(doc, op)
 	case OpDropCollection:
 		return ExecDropCollection(doc, op)
-	case OpSetValue, OpSetValueWhere, OpRemoveWhere, OpAppend,
-		OpTransform, OpMergeDefaults, OpMergeDefaultsByKey:
-		return fmt.Errorf("op %q: data ops not yet implemented", op.Type)
+	case OpSetValue:
+		return ExecSetValue(doc, op)
+	case OpSetValueWhere:
+		return ExecSetValueWhere(doc, op)
+	case OpRemoveWhere:
+		return ExecRemoveWhere(doc, op)
+	case OpAppend:
+		return ExecAppend(doc, op)
+	case OpMergeDefaults:
+		return ExecMergeDefaults(doc, op)
+	case OpMergeDefaultsByKey:
+		return ExecMergeDefaultsByKey(doc, op)
+	case OpTransform:
+		return fmt.Errorf("op %q: transform ops not yet implemented", op.Type)
 	case OpRaw:
 		return fmt.Errorf("op %q: raw ops not yet implemented", op.Type)
 	default:

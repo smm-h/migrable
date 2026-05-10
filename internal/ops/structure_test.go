@@ -240,11 +240,11 @@ func TestExecuteDispatch(t *testing.T) {
 		assertNodeValue(t, doc, "key", "val")
 	})
 
-	t.Run("returns not implemented for data ops", func(t *testing.T) {
+	t.Run("returns not implemented for transform op", func(t *testing.T) {
 		doc := mustParse(t, "")
-		err := Execute(doc, Op{Type: OpSetValue, Path: "key"})
+		err := Execute(doc, Op{Type: OpTransform, Path: "key", Expr: "x"})
 		if err == nil {
-			t.Fatal("expected error for unimplemented data op")
+			t.Fatal("expected error for unimplemented transform op")
 		}
 		if !strings.Contains(err.Error(), "not yet implemented") {
 			t.Errorf("error = %q", err.Error())
