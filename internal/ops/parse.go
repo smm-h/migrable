@@ -141,7 +141,7 @@ func parseOpFields(entry map[string]any, op *Op) error {
 		}
 
 	case OpSetValueWhere:
-		if v, ok := entry["where"].(map[string]any); ok {
+		if v, ok := entry["where"]; ok {
 			op.Where = v
 		}
 		if v, ok := entry["match_mode"].(string); ok {
@@ -152,7 +152,7 @@ func parseOpFields(entry map[string]any, op *Op) error {
 		}
 
 	case OpRemoveWhere:
-		if v, ok := entry["where"].(map[string]any); ok {
+		if v, ok := entry["where"]; ok {
 			op.Where = v
 		}
 		if v, ok := entry["match_mode"].(string); ok {

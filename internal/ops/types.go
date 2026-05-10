@@ -43,7 +43,7 @@ type Op struct {
 	Content string
 
 	// set_value_where, remove_where
-	Where     map[string]any
+	Where     any
 	MatchMode string
 	Set       map[string]any
 
