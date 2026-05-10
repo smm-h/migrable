@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	tomledit "github.com/smm-h/go-toml-edit"
@@ -473,10 +474,14 @@ down = { op = "set_value", path = "enabled", value = false }
 	}
 }
 
-func TestRollback_MultiFileRejectsMultipleFiles(t *testing.T) {
+func TestRollback_MultiFileRequiresVersionFile(t *testing.T) {
 	dir := t.TempDir()
 	migrationsDir := filepath.Join(dir, "migrations")
 	os.Mkdir(migrationsDir, 0o755)
+
+	// Create the target files so the file-loading step succeeds.
+	os.WriteFile(filepath.Join(dir, "config.toml"), []byte("title = \"test\"\n"), 0o644)
+	os.WriteFile(filepath.Join(dir, "users.toml"), []byte(""), 0o644)
 
 	cfg := &config.Config{
 		MigrationsDir: "migrations",
@@ -489,7 +494,10 @@ func TestRollback_MultiFileRejectsMultipleFiles(t *testing.T) {
 
 	_, err := Rollback(cfg, false)
 	if err == nil {
-		t.Fatal("expected error for multi-file project, got nil")
+		t.Fatal("expected error for multi-file project without version_file, got nil")
+	}
+	if !strings.Contains(err.Error(), "version_file") {
+		t.Errorf("error = %q, want it to mention version_file", err.Error())
 	}
 }
 

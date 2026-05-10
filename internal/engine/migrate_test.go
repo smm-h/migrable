@@ -545,7 +545,7 @@ value = "Updated App"
 	}
 }
 
-func TestMigrate_MultiFileRejectsMultipleFiles(t *testing.T) {
+func TestMigrate_MultiFileRequiresVersionFile(t *testing.T) {
 	dir := t.TempDir()
 	migrationsDir := filepath.Join(dir, "migrations")
 	os.Mkdir(migrationsDir, 0o755)
@@ -561,10 +561,10 @@ func TestMigrate_MultiFileRejectsMultipleFiles(t *testing.T) {
 
 	_, err := Migrate(cfg, false)
 	if err == nil {
-		t.Fatal("expected error for multi-file project, got nil")
+		t.Fatal("expected error for multi-file project without version_file, got nil")
 	}
-	if !strings.Contains(err.Error(), "single-file") {
-		t.Errorf("error = %q, want it to mention single-file", err.Error())
+	if !strings.Contains(err.Error(), "version_file") {
+		t.Errorf("error = %q, want it to mention version_file", err.Error())
 	}
 }
 

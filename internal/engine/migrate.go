@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 
 	"github.com/Masterminds/semver/v3"
 	tomledit "github.com/smm-h/go-toml-edit"
@@ -23,50 +24,57 @@ type MigrateResult struct {
 	FileChanges map[string][]tomledit.Change
 }
 
-// Migrate applies all pending migrations to the single target file.
+// Migrate applies all pending migrations to the target file(s).
 func Migrate(cfg *config.Config, dryRun bool) (*MigrateResult, error) {
-	if len(cfg.Files) != 1 {
-		return nil, fmt.Errorf("migrate currently supports single-file projects only (found %d files)", len(cfg.Files))
+	// Build sorted file keys for deterministic ordering and path routing.
+	fileKeys := sortedFileKeys(cfg.Files)
+
+	// Resolve all file paths and load documents.
+	docs := make(map[string]*tomledit.DocumentNode, len(cfg.Files))
+	filePaths := make(map[string]string, len(cfg.Files))
+	for key, rel := range cfg.Files {
+		p := rel
+		if !filepath.IsAbs(p) {
+			p = filepath.Join(cfg.BaseDir, p)
+		}
+		filePaths[key] = p
+
+		data, err := os.ReadFile(p)
+		if err != nil {
+			if errors.Is(err, os.ErrNotExist) {
+				data = []byte{}
+			} else {
+				return nil, fmt.Errorf("failed to read target file %s: %w", p, err)
+			}
+		}
+
+		doc, err := tomledit.Parse(data)
+		if err != nil {
+			if len(data) > 0 {
+				return nil, fmt.Errorf("target file %s contains invalid TOML: %w", p, err)
+			}
+			return nil, fmt.Errorf("failed to parse empty document: %w", err)
+		}
+		docs[key] = doc
 	}
 
-	// Resolve the single file entry.
-	var fileKey string
-	var filePath string
-	for k, v := range cfg.Files {
-		fileKey = k
-		filePath = v
-	}
-	if !filepath.IsAbs(filePath) {
-		filePath = filepath.Join(cfg.BaseDir, filePath)
-	}
-
-	// Read the target file.
-	fileData, err := os.ReadFile(filePath)
-	fileExists := true
-	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			fileExists = false
-			fileData = []byte{}
+	// Determine the version file key.
+	versionKey := cfg.VersionFile
+	if versionKey == "" {
+		if len(fileKeys) == 1 {
+			versionKey = fileKeys[0]
 		} else {
-			return nil, fmt.Errorf("failed to read target file %s: %w", filePath, err)
+			return nil, fmt.Errorf("version_file must be set for multi-file projects")
 		}
 	}
+	versionDoc := docs[versionKey]
 
-	// Parse the target file.
-	doc, err := tomledit.Parse(fileData)
-	if err != nil {
-		if fileExists {
-			return nil, fmt.Errorf("target file %s contains invalid TOML: %w", filePath, err)
-		}
-		return nil, fmt.Errorf("failed to parse empty document: %w", err)
-	}
-
-	// Read _schema_version from the document.
+	// Read _schema_version from the version document.
 	currentVersion := semver.MustParse("0.0.0")
-	if verStr, ok := doc.GetString("_schema_version"); ok {
+	if verStr, ok := versionDoc.GetString("_schema_version"); ok {
 		v, parseErr := semver.StrictNewVersion(verStr)
 		if parseErr != nil {
-			return nil, fmt.Errorf("invalid _schema_version %q in %s: %w", verStr, filePath, parseErr)
+			return nil, fmt.Errorf("invalid _schema_version %q in %s: %w", verStr, filePaths[versionKey], parseErr)
 		}
 		currentVersion = v
 	}
@@ -97,9 +105,13 @@ func Migrate(cfg *config.Config, dryRun bool) (*MigrateResult, error) {
 		return result, nil
 	}
 
-	// Save the original document state for dry-run diff.
-	originalBytes := doc.Bytes()
-	originalDoc, _ := tomledit.Parse(originalBytes)
+	// Save original documents for dry-run diff.
+	originalDocs := make(map[string]*tomledit.DocumentNode, len(docs))
+	for key, doc := range docs {
+		origBytes := doc.Bytes()
+		origDoc, _ := tomledit.Parse(origBytes)
+		originalDocs[key] = origDoc
+	}
 
 	// Apply each pending migration in order.
 	for _, meta := range pending {
@@ -115,14 +127,13 @@ func Migrate(cfg *config.Config, dryRun bool) (*MigrateResult, error) {
 
 		result.Descriptions[meta.Version.String()] = migration.Description
 
-		// Backup the document state before this migration (for rollback).
-		backup := doc.Bytes()
+		// Backup all documents before this migration.
+		backups := backupDocs(docs)
 
 		// Apply structure ops.
 		for i, op := range migration.Structure {
-			if execErr := ops.Execute(doc, op); execErr != nil {
-				// Rollback: restore from backup.
-				doc, _ = tomledit.Parse(backup)
+			if execErr := executeMultiFileOp(docs, op, fileKeys); execErr != nil {
+				restoreDocs(docs, backups)
 				return nil, fmt.Errorf("migration %s: structure[%d] (%s): %w",
 					meta.Version, i, op.Type, execErr)
 			}
@@ -130,17 +141,16 @@ func Migrate(cfg *config.Config, dryRun bool) (*MigrateResult, error) {
 
 		// Apply data ops.
 		for i, op := range migration.Data {
-			if execErr := ops.Execute(doc, op); execErr != nil {
-				// Rollback: restore from backup.
-				doc, _ = tomledit.Parse(backup)
+			if execErr := executeMultiFileOp(docs, op, fileKeys); execErr != nil {
+				restoreDocs(docs, backups)
 				return nil, fmt.Errorf("migration %s: data[%d] (%s): %w",
 					meta.Version, i, op.Type, execErr)
 			}
 		}
 
-		// Update _schema_version to this migration's version.
-		if setErr := doc.SetCreate("_schema_version", meta.Version.String()); setErr != nil {
-			doc, _ = tomledit.Parse(backup)
+		// Update _schema_version in the version file's document.
+		if setErr := docs[versionKey].SetCreate("_schema_version", meta.Version.String()); setErr != nil {
+			restoreDocs(docs, backups)
 			return nil, fmt.Errorf("migration %s: failed to update _schema_version: %w",
 				meta.Version, setErr)
 		}
@@ -148,22 +158,144 @@ func Migrate(cfg *config.Config, dryRun bool) (*MigrateResult, error) {
 		result.Applied++
 		result.ToVersion = meta.Version
 
-		// If not dry-run, write atomically after each migration.
+		// If not dry-run, write all files transactionally after each migration.
 		if !dryRun {
-			if writeErr := WriteFileAtomic(filePath, doc.Bytes()); writeErr != nil {
-				return nil, fmt.Errorf("migration %s: failed to write %s: %w",
-					meta.Version, filePath, writeErr)
+			fileData := make(map[string][]byte, len(docs))
+			for key, doc := range docs {
+				fileData[filePaths[key]] = doc.Bytes()
+			}
+			if writeErr := WriteFilesAtomic(fileData); writeErr != nil {
+				return nil, fmt.Errorf("migration %s: %w", meta.Version, writeErr)
 			}
 		}
 	}
 
-	// For dry-run, compute diff between original and final state.
+	// For dry-run, compute diff between original and final state per file.
 	if dryRun {
-		changes := tomledit.Diff(originalDoc, doc)
-		if len(changes) > 0 {
-			result.FileChanges[fileKey] = changes
+		for key, doc := range docs {
+			changes := tomledit.Diff(originalDocs[key], doc)
+			if len(changes) > 0 {
+				result.FileChanges[key] = changes
+			}
 		}
 	}
 
 	return result, nil
+}
+
+// executeMultiFileOp resolves the file key from the op's path fields and
+// executes the op on the appropriate document(s).
+func executeMultiFileOp(docs map[string]*tomledit.DocumentNode, op ops.Op, fileKeys []string) error {
+	switch op.Type {
+	case ops.OpMoveField:
+		return executeMoveFieldMultiFile(docs, op, fileKeys)
+	case ops.OpRenameField:
+		return executeRenameFieldMultiFile(docs, op, fileKeys)
+	default:
+		return executePathOp(docs, op, fileKeys)
+	}
+}
+
+// executePathOp handles ops that use op.Path for file routing.
+func executePathOp(docs map[string]*tomledit.DocumentNode, op ops.Op, fileKeys []string) error {
+	fileKey, innerPath, err := SplitFileKey(op.Path, fileKeys)
+	if err != nil {
+		return err
+	}
+	doc := docs[fileKey]
+	modified := op
+	modified.Path = innerPath
+	return ops.Execute(doc, modified)
+}
+
+// executeRenameFieldMultiFile handles rename_field: both from and to must
+// resolve to the same file.
+func executeRenameFieldMultiFile(docs map[string]*tomledit.DocumentNode, op ops.Op, fileKeys []string) error {
+	fromKey, fromInner, err := SplitFileKey(op.From, fileKeys)
+	if err != nil {
+		return fmt.Errorf("from path: %w", err)
+	}
+	toKey, _, err := SplitFileKey(op.To, fileKeys)
+	if err != nil {
+		return fmt.Errorf("to path: %w", err)
+	}
+	if fromKey != toKey {
+		return fmt.Errorf("rename_field: from (%s) and to (%s) must target the same file", fromKey, toKey)
+	}
+
+	doc := docs[fromKey]
+	modified := op
+	// rename_field uses From for the path to the key being renamed
+	modified.From = fromInner
+	// For to, extract just the new key name (last segment after the last unescaped dot)
+	_, toInner, _ := SplitFileKey(op.To, fileKeys)
+	modified.To = toInner
+	return ops.Execute(doc, modified)
+}
+
+// executeMoveFieldMultiFile handles move_field: source and destination can be
+// in different files. When cross-file, it reads from source doc, writes to dest
+// doc, and deletes from source doc.
+func executeMoveFieldMultiFile(docs map[string]*tomledit.DocumentNode, op ops.Op, fileKeys []string) error {
+	fromKey, fromInner, err := SplitFileKey(op.From, fileKeys)
+	if err != nil {
+		return fmt.Errorf("from path: %w", err)
+	}
+	toKey, toInner, err := SplitFileKey(op.To, fileKeys)
+	if err != nil {
+		return fmt.Errorf("to path: %w", err)
+	}
+
+	if fromKey == toKey {
+		// Same file: use the standard move_field implementation.
+		doc := docs[fromKey]
+		modified := op
+		modified.From = fromInner
+		modified.To = toInner
+		return ops.Execute(doc, modified)
+	}
+
+	// Cross-file move: read from source, write to dest, delete from source.
+	srcDoc := docs[fromKey]
+	dstDoc := docs[toKey]
+
+	srcNode := srcDoc.Get(fromInner)
+	if srcNode == nil {
+		return nil
+	}
+	if dstDoc.Get(toInner) != nil {
+		return fmt.Errorf("move_field: target path %q already exists in file %q", toInner, toKey)
+	}
+	val := srcNode.Value()
+	if err := dstDoc.SetCreate(toInner, val); err != nil {
+		return fmt.Errorf("move_field: failed to set %q in file %q: %w", toInner, toKey, err)
+	}
+	if err := srcDoc.Delete(fromInner); err != nil {
+		return fmt.Errorf("move_field: failed to delete %q from file %q: %w", fromInner, fromKey, err)
+	}
+	return nil
+}
+
+func sortedFileKeys(files map[string]string) []string {
+	keys := make([]string, 0, len(files))
+	for k := range files {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return keys
+}
+
+func backupDocs(docs map[string]*tomledit.DocumentNode) map[string][]byte {
+	backups := make(map[string][]byte, len(docs))
+	for key, doc := range docs {
+		backups[key] = doc.Bytes()
+	}
+	return backups
+}
+
+func restoreDocs(docs map[string]*tomledit.DocumentNode, backups map[string][]byte) {
+	for key, data := range backups {
+		restored, _ := tomledit.Parse(data)
+		docs[key] = restored
+	}
 }

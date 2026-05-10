@@ -25,42 +25,51 @@ func (e *RollbackBlockedError) Error() string {
 
 // Rollback reverses the most recently applied migration.
 func Rollback(cfg *config.Config, dryRun bool) (*MigrateResult, error) {
-	if len(cfg.Files) != 1 {
-		return nil, fmt.Errorf("rollback currently supports single-file projects only (found %d files)", len(cfg.Files))
-	}
+	// Build sorted file keys for deterministic ordering and path routing.
+	fileKeys := sortedFileKeys(cfg.Files)
 
-	// Resolve the single file entry.
-	var fileKey string
-	var filePath string
-	for k, v := range cfg.Files {
-		fileKey = k
-		filePath = v
-	}
-	if !filepath.IsAbs(filePath) {
-		filePath = filepath.Join(cfg.BaseDir, filePath)
-	}
-
-	// Read the target file.
-	fileData, err := os.ReadFile(filePath)
-	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			return nil, fmt.Errorf("target file %s does not exist, nothing to roll back", filePath)
+	// Resolve all file paths and load documents.
+	docs := make(map[string]*tomledit.DocumentNode, len(cfg.Files))
+	filePaths := make(map[string]string, len(cfg.Files))
+	for key, rel := range cfg.Files {
+		p := rel
+		if !filepath.IsAbs(p) {
+			p = filepath.Join(cfg.BaseDir, p)
 		}
-		return nil, fmt.Errorf("failed to read target file %s: %w", filePath, err)
+		filePaths[key] = p
+
+		data, err := os.ReadFile(p)
+		if err != nil {
+			if errors.Is(err, os.ErrNotExist) {
+				return nil, fmt.Errorf("target file %s does not exist, nothing to roll back", p)
+			}
+			return nil, fmt.Errorf("failed to read target file %s: %w", p, err)
+		}
+
+		doc, err := tomledit.Parse(data)
+		if err != nil {
+			return nil, fmt.Errorf("target file %s contains invalid TOML: %w", p, err)
+		}
+		docs[key] = doc
 	}
 
-	// Parse the target file.
-	doc, err := tomledit.Parse(fileData)
-	if err != nil {
-		return nil, fmt.Errorf("target file %s contains invalid TOML: %w", filePath, err)
+	// Determine the version file key.
+	versionKey := cfg.VersionFile
+	if versionKey == "" {
+		if len(fileKeys) == 1 {
+			versionKey = fileKeys[0]
+		} else {
+			return nil, fmt.Errorf("version_file must be set for multi-file projects")
+		}
 	}
+	versionDoc := docs[versionKey]
 
-	// Read _schema_version from the document.
+	// Read _schema_version from the version document.
 	currentVersion := semver.MustParse("0.0.0")
-	if verStr, ok := doc.GetString("_schema_version"); ok {
+	if verStr, ok := versionDoc.GetString("_schema_version"); ok {
 		v, parseErr := semver.StrictNewVersion(verStr)
 		if parseErr != nil {
-			return nil, fmt.Errorf("invalid _schema_version %q in %s: %w", verStr, filePath, parseErr)
+			return nil, fmt.Errorf("invalid _schema_version %q in %s: %w", verStr, filePaths[versionKey], parseErr)
 		}
 		currentVersion = v
 	}
@@ -128,66 +137,75 @@ func Rollback(cfg *config.Config, dryRun bool) (*MigrateResult, error) {
 		FileChanges:  make(map[string][]tomledit.Change),
 	}
 
-	// Save original state for dry-run diff.
-	originalBytes := doc.Bytes()
-	originalDoc, _ := tomledit.Parse(originalBytes)
+	// Save original documents for dry-run diff.
+	originalDocs := make(map[string]*tomledit.DocumentNode, len(docs))
+	for key, doc := range docs {
+		origBytes := doc.Bytes()
+		origDoc, _ := tomledit.Parse(origBytes)
+		originalDocs[key] = origDoc
+	}
 
 	// Backup for rollback on failure.
-	backup := doc.Bytes()
+	backups := backupDocs(docs)
 
 	// Execute down ops in reverse order: data first (reversed), then structure (reversed).
-	// Reverse data section.
 	for i := len(migration.Data) - 1; i >= 0; i-- {
 		op := migration.Data[i]
 		if op.Down == nil {
 			continue
 		}
-		if err := executeDownOps(doc, op.Down.Ops); err != nil {
-			doc, _ = tomledit.Parse(backup)
+		if err := executeDownOpsMultiFile(docs, op.Down.Ops, fileKeys); err != nil {
+			restoreDocs(docs, backups)
 			return nil, fmt.Errorf("rollback %s: data[%d] down: %w", currentVersion, i, err)
 		}
 	}
 
-	// Reverse structure section.
 	for i := len(migration.Structure) - 1; i >= 0; i-- {
 		op := migration.Structure[i]
 		if op.Down == nil {
 			continue
 		}
-		if err := executeDownOps(doc, op.Down.Ops); err != nil {
-			doc, _ = tomledit.Parse(backup)
+		if err := executeDownOpsMultiFile(docs, op.Down.Ops, fileKeys); err != nil {
+			restoreDocs(docs, backups)
 			return nil, fmt.Errorf("rollback %s: structure[%d] down: %w", currentVersion, i, err)
 		}
 	}
 
 	// Update _schema_version to the previous version.
-	if setErr := doc.SetCreate("_schema_version", previousVersion.String()); setErr != nil {
-		doc, _ = tomledit.Parse(backup)
+	if setErr := docs[versionKey].SetCreate("_schema_version", previousVersion.String()); setErr != nil {
+		restoreDocs(docs, backups)
 		return nil, fmt.Errorf("rollback %s: failed to update _schema_version: %w", currentVersion, setErr)
 	}
 
 	result.Applied = 1
 
 	if !dryRun {
-		if writeErr := WriteFileAtomic(filePath, doc.Bytes()); writeErr != nil {
-			return nil, fmt.Errorf("rollback %s: failed to write %s: %w", currentVersion, filePath, writeErr)
+		fileData := make(map[string][]byte, len(docs))
+		for key, doc := range docs {
+			fileData[filePaths[key]] = doc.Bytes()
+		}
+		if writeErr := WriteFilesAtomic(fileData); writeErr != nil {
+			return nil, fmt.Errorf("rollback %s: %w", currentVersion, writeErr)
 		}
 	}
 
 	if dryRun {
-		changes := tomledit.Diff(originalDoc, doc)
-		if len(changes) > 0 {
-			result.FileChanges[fileKey] = changes
+		for key, doc := range docs {
+			changes := tomledit.Diff(originalDocs[key], doc)
+			if len(changes) > 0 {
+				result.FileChanges[key] = changes
+			}
 		}
 	}
 
 	return result, nil
 }
 
-// executeDownOps executes a slice of down ops in reverse order.
-func executeDownOps(doc *tomledit.DocumentNode, downOps []ops.Op) error {
+// executeDownOpsMultiFile executes a slice of down ops in reverse order,
+// routing each op to the correct file.
+func executeDownOpsMultiFile(docs map[string]*tomledit.DocumentNode, downOps []ops.Op, fileKeys []string) error {
 	for i := len(downOps) - 1; i >= 0; i-- {
-		if err := ops.Execute(doc, downOps[i]); err != nil {
+		if err := executeMultiFileOp(docs, downOps[i], fileKeys); err != nil {
 			return err
 		}
 	}
