@@ -7,9 +7,6 @@
 ### Fixed
 
 - Fixed PyPI package build backend (`setuptools.build_meta`)
-- Added `__pycache__/` to pypi/.gitignore
-- Added wrapper tests for npm and PyPI packages
-- Moved design spec to `todo/.done/`, reference scenarios to `todo/.obsolete/`
 
 ## 0.2.0
 
@@ -19,7 +16,6 @@
 - README.md with install instructions, quick start, library usage example, and CLI reference
 - npm wrapper package (`npm/`) for `npx migrable` or `npm install migrable`
 - PyPI wrapper package (`pypi/`) for `pip install migrable` (lazy binary download on first run)
-- Conformance test for `expected_bytes` round-trip formatting preservation
 
 ### Changed
 
@@ -30,7 +26,6 @@
 ### Changed
 
 - Version detection uses a single source of truth (`version.go` at module root) for both goreleaser builds and `go install`
-- Updated rlsbl scaffolding to v0.16
 
 ## 0.1.1
 
