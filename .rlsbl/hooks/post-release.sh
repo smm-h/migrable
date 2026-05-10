@@ -6,3 +6,6 @@
 set -euo pipefail
 
 echo "Post-release: v$RLSBL_VERSION"
+
+echo "Building and deploying docs..."
+selfdoc build && selfdoc deploy
