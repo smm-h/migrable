@@ -23,5 +23,9 @@ archives:
     files:
       - docs/man/*.1
 
+release:
+  extra_files:
+    - glob: dist/conformance-tests.tar.gz
+
 checksum:
   name_template: "checksums.txt"

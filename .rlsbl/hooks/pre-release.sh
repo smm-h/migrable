@@ -29,3 +29,8 @@ if [ -f package.json ] && node -e "process.exit(require('./package.json').script
 fi
 
 echo "Pre-release checks passed."
+
+echo "Creating conformance test tarball..."
+mkdir -p dist
+tar czf dist/conformance-tests.tar.gz -C conformance --exclude='conformance_test.go' .
+echo "  Created dist/conformance-tests.tar.gz"
