@@ -240,23 +240,22 @@ func TestExecuteDispatch(t *testing.T) {
 		assertNodeValue(t, doc, "key", "val")
 	})
 
-	t.Run("returns not implemented for transform op", func(t *testing.T) {
-		doc := mustParse(t, "")
-		err := Execute(doc, Op{Type: OpTransform, Path: "key", Expr: "x"})
-		if err == nil {
-			t.Fatal("expected error for unimplemented transform op")
+	t.Run("dispatches transform op", func(t *testing.T) {
+		doc := mustParse(t, "key = \"hello\"\n")
+		err := Execute(doc, Op{Type: OpTransform, Path: "key", Expr: `value + "!"`})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
 		}
-		if !strings.Contains(err.Error(), "not yet implemented") {
-			t.Errorf("error = %q", err.Error())
-		}
+		assertNodeValue(t, doc, "key", "hello!")
 	})
 
-	t.Run("returns not implemented for raw op", func(t *testing.T) {
+	t.Run("dispatches raw op", func(t *testing.T) {
 		doc := mustParse(t, "")
-		err := Execute(doc, Op{Type: OpRaw, Content: "x"})
-		if err == nil {
-			t.Fatal("expected error for unimplemented raw op")
+		err := Execute(doc, Op{Type: OpRaw, Content: "new_key = 42\n"})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
 		}
+		assertNodeValue(t, doc, "new_key", int64(42))
 	})
 
 	t.Run("returns error for unknown op", func(t *testing.T) {

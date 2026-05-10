@@ -33,9 +33,9 @@ func Execute(doc *tomledit.DocumentNode, op Op) error {
 	case OpMergeDefaultsByKey:
 		return ExecMergeDefaultsByKey(doc, op)
 	case OpTransform:
-		return fmt.Errorf("op %q: transform ops not yet implemented", op.Type)
+		return ExecTransform(doc, op)
 	case OpRaw:
-		return fmt.Errorf("op %q: raw ops not yet implemented", op.Type)
+		return ExecRaw(doc, op)
 	default:
 		return fmt.Errorf("unknown op type %q", op.Type)
 	}
