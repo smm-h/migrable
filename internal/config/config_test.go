@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -99,7 +100,7 @@ b = "b.toml"
 				if err == nil {
 					t.Fatalf("expected error containing %q, got nil", tt.wantErr)
 				}
-				if !containsStr(err.Error(), tt.wantErr) {
+				if !strings.Contains(err.Error(), tt.wantErr) {
 					t.Fatalf("error = %q, want it to contain %q", err.Error(), tt.wantErr)
 				}
 				return
@@ -186,7 +187,7 @@ func TestExpandEnvStrict(t *testing.T) {
 				if err == nil {
 					t.Fatalf("expected error containing %q, got nil", tt.wantErr)
 				}
-				if !containsStr(err.Error(), tt.wantErr) {
+				if !strings.Contains(err.Error(), tt.wantErr) {
 					t.Fatalf("error = %q, want it to contain %q", err.Error(), tt.wantErr)
 				}
 				return
@@ -259,7 +260,7 @@ app = "app.toml"
 		if err == nil {
 			t.Fatal("expected ambiguous config error, got nil")
 		}
-		if !containsStr(err.Error(), "ambiguous") {
+		if !strings.Contains(err.Error(), "ambiguous") {
 			t.Fatalf("error = %q, want it to contain %q", err.Error(), "ambiguous")
 		}
 	})
@@ -273,7 +274,7 @@ app = "app.toml"
 		if err == nil {
 			t.Fatal("expected not found error, got nil")
 		}
-		if !containsStr(err.Error(), "not found") {
+		if !strings.Contains(err.Error(), "not found") {
 			t.Fatalf("error = %q, want it to contain %q", err.Error(), "not found")
 		}
 	})
@@ -299,7 +300,7 @@ app = "app.toml"
 		if err == nil {
 			t.Fatal("expected error, got nil")
 		}
-		if !containsStr(err.Error(), "does not exist") {
+		if !strings.Contains(err.Error(), "does not exist") {
 			t.Fatalf("error = %q, want it to contain %q", err.Error(), "does not exist")
 		}
 	})
@@ -333,22 +334,9 @@ app = "$MIGRABLE_TEST_UNSET_VAR/app.toml"
 	if err == nil {
 		t.Fatal("expected error for unset env var, got nil")
 	}
-	if !containsStr(err.Error(), "MIGRABLE_TEST_UNSET_VAR") {
+	if !strings.Contains(err.Error(), "MIGRABLE_TEST_UNSET_VAR") {
 		t.Fatalf("error = %q, want it to mention the variable name", err.Error())
 	}
-}
-
-func containsStr(s, substr string) bool {
-	return len(s) >= len(substr) && searchStr(s, substr)
-}
-
-func searchStr(s, substr string) bool {
-	for i := 0; i <= len(s)-len(substr); i++ {
-		if s[i:i+len(substr)] == substr {
-			return true
-		}
-	}
-	return false
 }
 
 func writeFile(t *testing.T, path, content string) {

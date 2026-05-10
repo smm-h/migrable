@@ -3,6 +3,7 @@ package engine
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -59,7 +60,7 @@ func TestDiscoverMigrations(t *testing.T) {
 				if err == nil {
 					t.Fatalf("expected error containing %q, got nil", tt.wantErr)
 				}
-				if !containsStr(err.Error(), tt.wantErr) {
+				if !strings.Contains(err.Error(), tt.wantErr) {
 					t.Fatalf("error = %q, want it to contain %q", err.Error(), tt.wantErr)
 				}
 				return
@@ -120,13 +121,4 @@ func TestDiscoverMigrations_NonexistentDir(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error for nonexistent directory, got nil")
 	}
-}
-
-func containsStr(s, substr string) bool {
-	for i := 0; i <= len(s)-len(substr); i++ {
-		if s[i:i+len(substr)] == substr {
-			return true
-		}
-	}
-	return false
 }
