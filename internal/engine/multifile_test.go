@@ -602,3 +602,155 @@ func TestSplitFileKey(t *testing.T) {
 		}
 	})
 }
+
+func TestMultiFile_UntouchedFileNotRewrittenDuringMigrate(t *testing.T) {
+	files := map[string]string{
+		"config": "config.toml",
+		"themes": "themes.toml",
+	}
+	contents := map[string]string{
+		"config": "title = \"App\"\n",
+		"themes": "[dark]\nbackground = \"#000\"\n",
+	}
+	// Migration only touches config, not themes.
+	migrations := map[string]string{
+		"1.0.0.toml": `description = "Add debug to config only"
+
+[[structure]]
+op = "add_field"
+path = "config.debug"
+type = "bool"
+default = false
+`,
+	}
+
+	cfg := setupMultiFileProject(t, files, contents, migrations)
+
+	// Record themes.toml content before migration.
+	themesPath := filepath.Join(cfg.BaseDir, "themes.toml")
+	themesBefore, err := os.ReadFile(themesPath)
+	if err != nil {
+		t.Fatalf("failed to read themes.toml before migration: %v", err)
+	}
+
+	// Record mtime of themes.toml before migration.
+	statBefore, err := os.Stat(themesPath)
+	if err != nil {
+		t.Fatalf("failed to stat themes.toml before migration: %v", err)
+	}
+	mtimeBefore := statBefore.ModTime()
+
+	// Run migration.
+	result, err := Migrate(cfg, false)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if result.Applied != 1 {
+		t.Errorf("Applied = %d, want 1", result.Applied)
+	}
+
+	// Verify themes.toml was NOT rewritten: content unchanged.
+	themesAfter, err := os.ReadFile(themesPath)
+	if err != nil {
+		t.Fatalf("failed to read themes.toml after migration: %v", err)
+	}
+	if string(themesAfter) != string(themesBefore) {
+		t.Error("themes.toml content changed despite no ops targeting it")
+	}
+
+	// Verify mtime unchanged (file was not rewritten).
+	statAfter, err := os.Stat(themesPath)
+	if err != nil {
+		t.Fatalf("failed to stat themes.toml after migration: %v", err)
+	}
+	if !statAfter.ModTime().Equal(mtimeBefore) {
+		t.Errorf("themes.toml mtime changed: before=%v after=%v", mtimeBefore, statAfter.ModTime())
+	}
+
+	// Verify the migration actually did something to config.
+	configData, _ := os.ReadFile(filepath.Join(cfg.BaseDir, "config.toml"))
+	configDoc, _ := tomledit.Parse(configData)
+	if _, ok := configDoc.GetBool("debug"); !ok {
+		t.Fatal("debug not found in config.toml after migration")
+	}
+	if v, ok := configDoc.GetString("_schema_version"); !ok || v != "1.0.0" {
+		t.Errorf("_schema_version = %q, want %q", v, "1.0.0")
+	}
+}
+
+func TestMultiFile_UntouchedFileNotRewrittenDuringRollback(t *testing.T) {
+	files := map[string]string{
+		"config": "config.toml",
+		"themes": "themes.toml",
+	}
+	contents := map[string]string{
+		"config": "title = \"App\"\n",
+		"themes": "[dark]\nbackground = \"#000\"\n",
+	}
+	// Migration only touches config, not themes. Has down ops.
+	migrations := map[string]string{
+		"1.0.0.toml": `description = "Add debug to config only"
+
+[[structure]]
+op = "add_field"
+path = "config.debug"
+type = "bool"
+default = false
+down = { op = "remove_field", path = "config.debug" }
+`,
+	}
+
+	cfg := setupMultiFileProject(t, files, contents, migrations)
+
+	// Apply migration first.
+	_, err := Migrate(cfg, false)
+	if err != nil {
+		t.Fatalf("failed to apply migration: %v", err)
+	}
+
+	// Record themes.toml content and mtime before rollback.
+	themesPath := filepath.Join(cfg.BaseDir, "themes.toml")
+	themesBefore, err := os.ReadFile(themesPath)
+	if err != nil {
+		t.Fatalf("failed to read themes.toml before rollback: %v", err)
+	}
+	statBefore, err := os.Stat(themesPath)
+	if err != nil {
+		t.Fatalf("failed to stat themes.toml before rollback: %v", err)
+	}
+	mtimeBefore := statBefore.ModTime()
+
+	// Rollback.
+	result, err := Rollback(cfg, false)
+	if err != nil {
+		t.Fatalf("unexpected rollback error: %v", err)
+	}
+	if result.Applied != 1 {
+		t.Errorf("Applied = %d, want 1", result.Applied)
+	}
+
+	// Verify themes.toml was NOT rewritten: content unchanged.
+	themesAfter, err := os.ReadFile(themesPath)
+	if err != nil {
+		t.Fatalf("failed to read themes.toml after rollback: %v", err)
+	}
+	if string(themesAfter) != string(themesBefore) {
+		t.Error("themes.toml content changed during rollback despite no ops targeting it")
+	}
+
+	// Verify mtime unchanged.
+	statAfter, err := os.Stat(themesPath)
+	if err != nil {
+		t.Fatalf("failed to stat themes.toml after rollback: %v", err)
+	}
+	if !statAfter.ModTime().Equal(mtimeBefore) {
+		t.Errorf("themes.toml mtime changed during rollback: before=%v after=%v", mtimeBefore, statAfter.ModTime())
+	}
+
+	// Verify the rollback actually did something to config.
+	configData, _ := os.ReadFile(filepath.Join(cfg.BaseDir, "config.toml"))
+	configDoc, _ := tomledit.Parse(configData)
+	if _, ok := configDoc.GetBool("debug"); ok {
+		t.Error("debug should be removed from config.toml after rollback")
+	}
+}
