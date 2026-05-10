@@ -15,4 +15,5 @@ jobs:
         with:
           go-version-file: go.mod
       - run: go vet ./...
-      - run: go test ./... -race -short -timeout=10m
+      - run: go build ./...
+      - run: go test ./... -race -timeout=10m
