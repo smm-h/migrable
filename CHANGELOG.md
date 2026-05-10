@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.1.1
+
+### Fixed
+
+- `go install github.com/smm-h/migrable@latest` now works (moved entry point to module root)
+- Version displayed correctly when installed via `go install` (fallback to runtime build info)
+
 ## 0.1.0
 
 Initial release. Declarative, comment-preserving TOML config file migrations.
