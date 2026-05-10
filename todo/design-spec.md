@@ -161,7 +161,7 @@ Alphabetical sort determines op order within the merged file. Name staging files
 
 ### Version tracking
 
-The current schema version is stored as a `_schema_version` key in the TOML config file, set to the semver string of the highest applied migration. Defaults to `"0.0.0"` if absent. In multi-file projects, `_schema_version` is stored in the file designated by `version_file` in `migrable.toml`.
+The current schema version is stored as a `_schema_version` key in a TOML config file, set to the semver string of the highest applied migration. Defaults to `"0.0.0"` if absent. In single-file projects, `_schema_version` is stored in the sole file. In multi-file projects, it is stored in the file designated by `version_file` in `migrable.toml`.
 
 ### Accumulation
 
@@ -224,7 +224,7 @@ where = { role = "admin" }
 set = { email_verified = false }
 ```
 
-### Down ops: inline vs header form
+### Down ops: inline, header, and array forms
 
 Simple down ops fit on one line as inline tables:
 
@@ -232,7 +232,7 @@ Simple down ops fit on one line as inline tables:
 down = { op = "remove_field", path = "email_verified" }
 ```
 
-Complex down ops with nested fields use the `[section.down]` header form:
+Complex down ops with nested fields use the `[section.down]` header form. Each `[data.down]` or `[structure.down]` attaches to the most recent `[[data]]` or `[[structure]]` entry (standard TOML array-of-tables behavior):
 
 ```toml
 [[data]]
@@ -250,7 +250,34 @@ where = { role = "admin" }
 set = { email_verified = false }
 ```
 
-Each `[data.down]` or `[structure.down]` attaches to the most recent `[[data]]` or `[[structure]]` entry. This is standard TOML array-of-tables behavior. `migrable validate` checks that every op has exactly one `down` and that positional associations are correct.
+When reversal requires multiple ops (e.g., undoing `merge_defaults`), `down` can be an array of inline tables. During rollback, array entries execute in reverse order:
+
+```toml
+[[structure]]
+op = "merge_defaults"
+path = "ui"
+value = { theme = "dark", font_size = 14 }
+down = [
+  { op = "remove_field", path = "ui.theme" },
+  { op = "remove_field", path = "ui.font_size" },
+]
+```
+
+### Irreversible ops
+
+When an op is not meaningfully reversible (e.g., a lossy `transform`), declare `down = "irreversible"` instead of providing a fake reversal:
+
+```toml
+[[data]]
+op = "transform"
+path = "password"
+expr = "value.upperAscii()"
+down = "irreversible"
+```
+
+`migrable validate` accepts `"irreversible"`. `migrable migrate --rollback` errors if any op in the target migration is marked irreversible.
+
+`migrable validate` checks that every op has a `down` field (single op, array of ops, or `"irreversible"`).
 
 ### Absent defaults
 
@@ -270,8 +297,8 @@ Change what fields and tables exist.
 |----|--------|-------------|--------------------------|---------------------------|
 | `add_field` | `path`, `type`, `default` (optional), `down` | Add a new field | No-op (preserves existing value) | Creates field and intermediate tables |
 | `remove_field` | `path`, `down` | Remove a field | Removes the field | No-op |
-| `rename_field` | `from`, `to`, `down` | Rename a field (or table) | Renames the key | No-op if source missing |
-| `move_field` | `from`, `to`, `down` | Move a field between tables | Reads value, writes to new path, deletes old | No-op if source missing |
+| `rename_field` | `from`, `to`, `down` | Rename a field (or table) | Renames the key. Error if `to` already exists. | No-op if source missing |
+| `move_field` | `from`, `to`, `down` | Move a field between tables | Reads value, writes to new path, deletes old. Error if `to` already exists. | No-op if source missing |
 | `add_collection` | `path`, `fields` (optional), `down` | Create a new table or array of tables | Error | Creates the table |
 | `drop_collection` | `path`, `down` | Remove a table or array of tables | Removes it | No-op |
 
@@ -319,7 +346,7 @@ Each op maps to [go-toml-edit](https://github.com/smm-h/go-toml-edit) API calls.
 | `move_field` | `doc.Get(from)` to read value, `doc.SetCreate(to, value)`, `doc.Delete(from)` |
 | `add_collection` | `doc.NewTable(path)` + optional `doc.SetCreate` for each field |
 | `drop_collection` | `doc.Delete(path)` |
-| `set_value` | `doc.Set(path, value)` or `doc.SetCreate(path, value)` |
+| `set_value` | `doc.SetCreate(path, value)` |
 | `set_value_where` | `doc.Items(path)` to iterate + `doc.Set` on matches |
 | `remove_where` | `doc.Items(path)` to iterate + `doc.Delete` on matches |
 | `append` | `doc.Get(path)` to read array, append element, `doc.Set(path, updated)` to write back |
@@ -400,7 +427,11 @@ Paths are resolved left to right. Write operations (`SetCreate`) create intermed
 
 ## Down Ops (Reversibility)
 
-Every op **must** have a `down` field declaring how to reverse it. There is no auto-inference. The `down` field contains a complete op object (as an inline table or `[section.down]` header).
+Every op **must** have a `down` field. There is no auto-inference. The `down` field can be:
+
+- A single op as an inline table or `[section.down]` header.
+- An array of ops as inline tables (for multi-step reversal). Executed in reverse order during rollback.
+- The string `"irreversible"` for ops that cannot be meaningfully reversed.
 
 ### Reversal pairs
 
@@ -417,8 +448,8 @@ Every op **must** have a `down` field declaring how to reverse it. There is no a
 | `remove_where` | `append` (with the removed items) |
 | `append` | `remove_where` (matching the appended item) |
 | `transform` | `transform` (reverse expression) |
-| `merge_defaults` | `remove_field` for each key that was added |
-| `merge_defaults_by_key` | series of `set_value_where` or `remove_where` ops to undo per-item attribute additions |
+| `merge_defaults` | Array of `remove_field` ops for each key that was added |
+| `merge_defaults_by_key` | Array of `set_value_where` or `remove_where` ops to undo per-item attribute additions |
 | `raw` | `raw` (reverse content) |
 
 ### Rollback limitations
@@ -427,7 +458,9 @@ Rollback restores structure but may lose user-customized values. For example, ro
 
 ### Rollback execution order
 
-`migrable migrate --rollback` reverses the last applied migration by executing all down ops in **reverse section order**: data -> structure. Within each section, ops execute in reverse order. After rollback, `_schema_version` is set to the version of the migration applied before the rolled-back one, or `"0.0.0"` if the first migration was rolled back.
+`migrable migrate --rollback` reverses the last applied migration by executing all down ops in **reverse section order**: data -> structure. Within each section, ops execute in reverse order. Array-valued `down` fields execute their entries in reverse order. After rollback, `_schema_version` is set to the version of the migration applied before the rolled-back one, or `"0.0.0"` if the first migration was rolled back.
+
+If any op in the target migration has `down = "irreversible"`, rollback aborts with an error before executing any down ops.
 
 ---
 
@@ -484,7 +517,7 @@ TOML files are written atomically: write to a temporary file in the same directo
 
 ### Multi-file atomicity
 
-In multi-file projects, all files are written transactionally. The engine first writes all temporary files. If all succeed, it renames them all to their final paths. If any temporary file write fails, all temporary files are cleaned up and no files are modified. This prevents inconsistent state across files.
+In multi-file projects, each migration is committed independently. After a migration succeeds, all affected files are written transactionally: temporary files are written first, then renamed to their final paths. If any write fails, all temporary files are cleaned up and no files are modified for that migration. This prevents inconsistent state across files within a single migration. Previously committed migrations remain on disk.
 
 ---
 
@@ -501,10 +534,10 @@ The migration engine follows this sequence for each invocation:
    - Parse the TOML migration file.
    - Apply `[[structure]]` ops sequentially, each translating to go-toml-edit API calls.
    - Apply `[[data]]` ops sequentially.
-   - If any op fails, discard all in-memory changes and report the error (which migration, which op, why).
-7. **Update `_schema_version`** in the version file to the highest applied migration.
-8. **Write transactionally**: write all temp files, then rename all. If any write fails, clean up all temps.
-9. **Report results**: applied count, current version, any warnings.
+   - If any op fails, discard all in-memory changes for this migration, report the error (which migration, which op, why), and stop. Previously committed migrations remain on disk.
+   - On success, update `_schema_version` in the version file to this migration's version.
+   - Write transactionally: write all temp files for affected files, then rename all. If any write fails, clean up all temps and stop.
+7. **Report results**: applied count, current version, any warnings.
 
 ---
 
