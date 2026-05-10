@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+## 0.3.0
+
+### Added
+
+- Example projects: `examples/single-file/` and `examples/multi-file/` with complete migration workflows
+- Scenario test coverage for validate, merge, and init commands (all CLI commands now have scenario tests)
+- Shell completion docs for bash, zsh, and fish
+- selfdoc configuration for auto-generated API documentation
+
+### Fixed
+
+- npm install.js now shows actionable error messages on download failure (manual download URL and go install alternative)
+
 ## 0.2.1
 
 ### Fixed
