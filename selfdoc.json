@@ -1,0 +1,6 @@
+{
+  "language": "go",
+  "source_dirs": ["config", "engine", "ops"],
+  "docs_dir": "docs",
+  "output_dir": "docs/_build"
+}

@@ -29,6 +29,9 @@ Thumbs.db
 .env.local
 *.local-only
 
+# Selfdoc build output
+docs/_build/
+
 # Other
 coverage/
 *.egg-info/
