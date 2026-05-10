@@ -4,11 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "migrable"
-version = "0.2.1"
+version = "0.4.0"
 description = "Declarative config file migrations for TOML"
 license = "MIT"
 requires-python = ">=3.8"
 readme = "README.md"
+keywords = ["rlsbl"]
 
 [project.urls]
 Homepage = "https://github.com/smm-h/migrable"
