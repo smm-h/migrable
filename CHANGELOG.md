@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 0.2.1
+
+### Fixed
+
+- Fixed PyPI package build backend (`setuptools.build_meta`)
+- Added `__pycache__/` to pypi/.gitignore
+- Added wrapper tests for npm and PyPI packages
+- Moved design spec to `todo/.done/`, reference scenarios to `todo/.obsolete/`
+
 ## 0.2.0
 
 ### Added
