@@ -18,14 +18,16 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
-      - name: Create conformance tarball
-        run: |
-          mkdir -p dist
-          tar czf dist/conformance-tests.tar.gz -C conformance --exclude='*_test.go' .
       - uses: goreleaser/goreleaser-action@v7
         with:
           version: "~> v2"
           args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload conformance tarball
+        run: |
+          tar czf conformance-tests.tar.gz -C conformance --exclude='*_test.go' .
+          gh release upload "${{ github.event.release.tag_name }}" conformance-tests.tar.gz --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
