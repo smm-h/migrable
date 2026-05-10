@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.5.1
+
+Internal improvements.
+
 ## 0.5.0
 
 ### Added
