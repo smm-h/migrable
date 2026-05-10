@@ -7,18 +7,22 @@ Declarative config file migrations for TOML.
 ### config
 
 :::module config
+:::
 
 ### engine
 
 :::module engine
+:::
 
 ### ops
 
 :::module ops
+:::
 
 ## Op Types
 
 :::schema ops/types.go Op
+:::
 
 ## CLI
 
