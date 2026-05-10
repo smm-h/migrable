@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+## 0.2.0
+
+### Added
+
+- Public Go API: `config`, `engine`, and `ops` packages are now importable (`github.com/smm-h/migrable/{config,engine,ops}`)
+- README.md with install instructions, quick start, library usage example, and CLI reference
+- npm wrapper package (`npm/`) for `npx migrable` or `npm install migrable`
+- PyPI wrapper package (`pypi/`) for `pip install migrable` (lazy binary download on first run)
+- Conformance test for `expected_bytes` round-trip formatting preservation
+
+### Changed
+
+- Removed `.migrable/` auto-search for config — migrable.toml is found at project root only (`--config-dir` for non-standard locations)
+
 ## 0.1.2
 
 ### Changed
