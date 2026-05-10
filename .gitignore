@@ -1,0 +1,19 @@
+# Binary
+/migrable
+
+# Build output
+/dist/
+
+# Vendor directory
+vendor/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
