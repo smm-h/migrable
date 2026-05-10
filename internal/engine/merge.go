@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strings"
 
+	tomledit "github.com/smm-h/go-toml-edit"
 	"github.com/smm-h/migrable/internal/ops"
 )
 
@@ -270,6 +271,20 @@ func formatTOMLValue(v any) string {
 		return "[" + strings.Join(parts, ", ") + "]"
 	case map[string]any:
 		return formatTOMLInlineTable(val)
+	case tomledit.LocalDateTime:
+		if val.Nanosecond != 0 {
+			return fmt.Sprintf("%04d-%02d-%02dT%02d:%02d:%02d.%09d",
+				val.Year, val.Month, val.Day, val.Hour, val.Minute, val.Second, val.Nanosecond)
+		}
+		return fmt.Sprintf("%04d-%02d-%02dT%02d:%02d:%02d",
+			val.Year, val.Month, val.Day, val.Hour, val.Minute, val.Second)
+	case tomledit.LocalDate:
+		return fmt.Sprintf("%04d-%02d-%02d", val.Year, val.Month, val.Day)
+	case tomledit.LocalTime:
+		if val.Nanosecond != 0 {
+			return fmt.Sprintf("%02d:%02d:%02d.%09d", val.Hour, val.Minute, val.Second, val.Nanosecond)
+		}
+		return fmt.Sprintf("%02d:%02d:%02d", val.Hour, val.Minute, val.Second)
 	default:
 		return fmt.Sprintf("%v", v)
 	}

@@ -209,6 +209,52 @@ down = {op = "remove_field", path = "x"}
 	}
 }
 
+func TestMerge_LocalDateDefault(t *testing.T) {
+	dir := t.TempDir()
+	nextDir := filepath.Join(dir, "next")
+	os.MkdirAll(nextDir, 0o755)
+
+	staging := `description = "add birthday field"
+
+[[structure]]
+op = "add_field"
+path = "user.birthday"
+type = "local_date"
+default = 1979-05-27
+down = {op = "remove_field", path = "user.birthday"}
+`
+	os.WriteFile(filepath.Join(nextDir, "add-birthday.toml"), []byte(staging), 0o644)
+
+	outPath, err := Merge(dir, "1.0.0")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	data, err := os.ReadFile(outPath)
+	if err != nil {
+		t.Fatalf("failed to read output: %v", err)
+	}
+
+	content := string(data)
+
+	// The merged output must contain a valid TOML date literal, not garbage like {1979 5 27}.
+	if !strings.Contains(content, "1979-05-27") {
+		t.Errorf("merged output does not contain valid date literal '1979-05-27':\n%s", content)
+	}
+	if strings.Contains(content, "{") && strings.Contains(content, "1979") {
+		// Check it's not the garbage struct format.
+		if strings.Contains(content, "{1979") {
+			t.Errorf("merged output contains garbage struct format instead of date literal:\n%s", content)
+		}
+	}
+
+	// Verify the output is valid parseable TOML.
+	_, err = ops.ParseMigration(data)
+	if err != nil {
+		t.Fatalf("merged output is not valid TOML: %v", err)
+	}
+}
+
 func TestMerge_StructureAndDataFromDifferentFiles(t *testing.T) {
 	dir := t.TempDir()
 	nextDir := filepath.Join(dir, "next")
