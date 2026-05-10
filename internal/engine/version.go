@@ -76,6 +76,11 @@ func WriteSchemaVersion(filePath string, version *semver.Version) error {
 		return fmt.Errorf("failed to close temp file: %w", err)
 	}
 
+	if err := os.Chmod(tmpName, 0o666); err != nil {
+		os.Remove(tmpName)
+		return fmt.Errorf("failed to chmod temp file: %w", err)
+	}
+
 	if err := os.Rename(tmpName, filePath); err != nil {
 		os.Remove(tmpName)
 		return fmt.Errorf("failed to atomically replace %s: %w", filePath, err)
