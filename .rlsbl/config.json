@@ -1,7 +1,13 @@
 {
   "targets": [
     "go",
-    {"name": "npm", "path": "npm/"},
-    {"name": "pypi", "path": "pypi/"}
+    {
+      "name": "npm",
+      "path": "npm/"
+    },
+    {
+      "name": "pypi",
+      "path": "pypi/"
+    }
   ]
 }
