@@ -78,7 +78,7 @@ Everything is TOML. Migration files, project config, target config files, and co
 
 ## migrable.toml
 
-Per-project config file. Tells migrable where to find TOML config files and migration files. Lives in the project root or `.migrable/`.
+Per-project config file. Tells migrable where to find TOML config files and migration files. Lives in the project root.
 
 ### Single-file project
 
@@ -470,7 +470,7 @@ If any op in the target migration has `down = "irreversible"`, rollback aborts w
 migrable migrate                    Run pending migrations
   --dry-run                        Preview changes (diff output)
   --rollback                       Reverse the last applied migration (uses down ops)
-  --config-dir <path>              Override location of migrable.toml (default: . then .migrable/)
+  --config-dir <path>              Override location of migrable.toml (default: .)
 
 migrable status                    Show current version, pending migrations, and file paths
 
