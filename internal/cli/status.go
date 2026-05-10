@@ -2,7 +2,6 @@ package cli
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 
 	"github.com/smm-h/migrable/internal/config"
@@ -60,7 +59,7 @@ func runStatus(cmd *cobra.Command, args []string) error {
 
 	if Quiet {
 		if len(pending) > 0 {
-			os.Exit(1)
+			return NewExitError(ExitGeneralError, "")
 		}
 		return nil
 	}
