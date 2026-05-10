@@ -70,12 +70,12 @@ func TestMerge_EmptyNext(t *testing.T) {
 	nextDir := filepath.Join(dir, "next")
 	os.MkdirAll(nextDir, 0o755)
 
-	_, err := Merge(dir, "1.0.0")
-	if err == nil {
-		t.Fatal("expected error for empty next/")
+	outPath, err := Merge(dir, "1.0.0")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
 	}
-	if !strings.Contains(err.Error(), "no staging files") {
-		t.Errorf("error = %q, want it to contain 'no staging files'", err)
+	if outPath != "" {
+		t.Errorf("outPath = %q, want empty string", outPath)
 	}
 }
 

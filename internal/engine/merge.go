@@ -43,7 +43,7 @@ func Merge(migrationsDir string, version string) (string, error) {
 	sort.Strings(stagingFiles)
 
 	if len(stagingFiles) == 0 {
-		return "", fmt.Errorf("no staging files in next/")
+		return "", nil
 	}
 
 	// Parse all staging files.

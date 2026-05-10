@@ -40,6 +40,13 @@ func runMerge(cmd *cobra.Command, args []string) error {
 		return NewExitError(ExitGeneralError, "%v", err)
 	}
 
+	if outPath == "" {
+		if !Quiet {
+			fmt.Fprintln(cmd.ErrOrStderr(), "Warning: no staging files in next/, nothing to merge")
+		}
+		return nil
+	}
+
 	if Quiet {
 		return nil
 	}
