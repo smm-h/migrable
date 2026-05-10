@@ -22,14 +22,17 @@ function main() {
   const osArch = process.arch;
 
   const os = PLATFORM_MAP[osPlatform];
-  if (!os) {
-    console.error(`Unsupported platform: ${osPlatform}`);
-    process.exit(1);
-  }
-
   const arch = ARCH_MAP[osArch];
-  if (!arch) {
-    console.error(`Unsupported architecture: ${osArch}`);
+
+  if (!os || !arch) {
+    const label = !os && !arch
+      ? `platform ${osPlatform} and architecture ${osArch}`
+      : !os
+        ? `platform ${osPlatform}`
+        : `architecture ${osArch}`;
+    console.error(`Unsupported ${label}.`);
+    console.error(`Download manually from https://github.com/smm-h/migrable/releases`);
+    console.error(`Or install via Go: go install github.com/smm-h/migrable@latest`);
     process.exit(1);
   }
 
@@ -44,6 +47,9 @@ function main() {
   download(url, (err, data) => {
     if (err) {
       console.error(`Failed to download migrable: ${err.message}`);
+      console.error(`URL: ${url}`);
+      console.error(`Download manually from https://github.com/smm-h/migrable/releases`);
+      console.error(`Or install via Go: go install github.com/smm-h/migrable@latest`);
       process.exit(1);
     }
 
