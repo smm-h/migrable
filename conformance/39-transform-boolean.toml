@@ -1,0 +1,14 @@
+description = "transform with boolean negation"
+
+input = '''
+enabled = true
+'''
+
+expected = '''
+enabled = false
+'''
+
+[[migration.data]]
+op = "transform"
+path = "enabled"
+expr = "!value"

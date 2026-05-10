@@ -1,0 +1,18 @@
+description = "set_value_where with index match mode beyond array length is a no-op"
+
+input = '''
+[[items]]
+name = "only"
+'''
+
+expected = '''
+[[items]]
+name = "only"
+'''
+
+[[migration.data]]
+op = "set_value_where"
+path = "items"
+match_mode = "index"
+where = 5
+set = { extra = true }

@@ -1,0 +1,27 @@
+description = "set_value_where with not_has_key match mode targets items missing a specific key"
+
+input = '''
+[[users]]
+name = "alice"
+role = "admin"
+
+[[users]]
+name = "bob"
+'''
+
+expected = '''
+[[users]]
+name = "alice"
+role = "admin"
+
+[[users]]
+name = "bob"
+role = "user"
+'''
+
+[[migration.data]]
+op = "set_value_where"
+path = "users"
+match_mode = "not_has_key"
+where = "role"
+set = { role = "user" }

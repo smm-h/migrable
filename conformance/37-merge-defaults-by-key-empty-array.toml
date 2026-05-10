@@ -1,0 +1,17 @@
+description = "merge_defaults_by_key with empty inline array is a no-op"
+
+input = '''
+users = []
+'''
+
+expected = '''
+users = []
+'''
+
+[[migration.data]]
+op = "merge_defaults_by_key"
+path = "users"
+match_field = "name"
+defaults = [
+  { name = "alice", role = "admin" },
+]

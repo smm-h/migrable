@@ -1,0 +1,17 @@
+description = "merge_defaults preserves existing array (arrays are atomic)"
+
+input = '''
+[ui]
+colors = ["red", "green"]
+'''
+
+expected = '''
+[ui]
+colors = ["red", "green"]
+font = "sans"
+'''
+
+[[migration.data]]
+op = "merge_defaults"
+path = "ui"
+value = { colors = ["blue", "yellow"], font = "sans" }

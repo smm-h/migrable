@@ -1,0 +1,14 @@
+description = "transform with conditional CEL expression"
+
+input = '''
+mode = "dark"
+'''
+
+expected = '''
+mode = "night"
+'''
+
+[[migration.data]]
+op = "transform"
+path = "mode"
+expr = "value == 'dark' ? 'night' : 'day'"
