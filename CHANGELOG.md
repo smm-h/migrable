@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.4.0
+
+### Added
+
+- Man pages for all commands (included in release archives)
+- Conformance test tarball published as a standalone release asset for cross-language implementors
+- npm and PyPI wrapper versions now sync automatically via rlsbl subdirectory targets
+
 ## 0.3.0
 
 ### Added
