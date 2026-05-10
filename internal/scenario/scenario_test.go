@@ -135,14 +135,60 @@ default = false
 		AssertUntouched("config")
 }
 
-// TestNormal_StageAndMerge is skipped: merge command is out of scope.
-func TestNormal_StageAndMerge(t *testing.T) {
-	t.Skip("merge command is out of scope for scenario tests")
+func TestScenario_Validate(t *testing.T) {
+	// Migration with a missing down op should produce 1 validation error.
+	New(t).
+		Migration("1.0.0", `description = "Missing down op"
+
+[[structure]]
+op = "add_field"
+path = "debug"
+type = "bool"
+default = false
+`).
+		Validate().
+		AssertSuccess().
+		AssertErrors(1).
+		AssertWarnings(0)
 }
 
-// TestNormal_ValidateBeforeCI is skipped: validate command is out of scope.
-func TestNormal_ValidateBeforeCI(t *testing.T) {
-	t.Skip("validate command is out of scope for scenario tests")
+func TestScenario_Merge(t *testing.T) {
+	s := New(t).
+		Migration("0.0.0", `description = "initial"
+`)
+
+	s.StagingFile("001_add-debug", `description = "Add debug flag"
+
+[[structure]]
+op = "add_field"
+path = "debug"
+type = "bool"
+default = false
+down = { op = "remove_field", path = "debug" }
+`)
+
+	s.StagingFile("002_add-log-level", `description = "Add log_level"
+
+[[structure]]
+op = "add_field"
+path = "log_level"
+type = "string"
+default = "info"
+down = { op = "remove_field", path = "log_level" }
+`)
+
+	s.Merge("1.0.0").
+		AssertSuccess().
+		AssertOutputExists().
+		AssertPathExists("migrations/1.0.0.toml")
+}
+
+func TestScenario_Init(t *testing.T) {
+	New(t).
+		Init().
+		AssertSuccess().
+		AssertPathExists("migrable.toml").
+		AssertPathExists("migrations")
 }
 
 func TestNormal_MigrationStatus(t *testing.T) {
@@ -180,10 +226,7 @@ default = "z"
 		AssertPending(2) // 2.0.0 and 3.0.0 are pending
 }
 
-// TestNormal_ScaffoldNewProject is skipped: init command is out of scope.
-func TestNormal_ScaffoldNewProject(t *testing.T) {
-	t.Skip("init command is out of scope for scenario tests")
-}
+// TestNormal_ScaffoldNewProject is covered by TestScenario_Init.
 
 // --- Not-so-normal use cases ---
 

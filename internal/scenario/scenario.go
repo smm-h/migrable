@@ -37,6 +37,9 @@ type Result struct {
 	currentVer  string
 	pending     int
 	preSnapshot map[string][]byte
+	errorCount  int    // validation error count
+	warnCount   int    // validation warning count
+	outputPath  string // merge output path
 }
 
 // New creates a scenario with an isolated temp directory.
@@ -288,6 +291,65 @@ func (s *Scenario) Status() *Result {
 	}
 }
 
+// StagingFile writes a staging file to migrations/next/<name>.toml.
+func (s *Scenario) StagingFile(name, content string) *Scenario {
+	s.t.Helper()
+	s.materialize()
+	nextDir := filepath.Join(s.dir, "migrations", "next")
+	if err := os.MkdirAll(nextDir, 0o755); err != nil {
+		s.t.Fatalf("failed to create next/ dir: %v", err)
+	}
+	path := filepath.Join(nextDir, name+".toml")
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		s.t.Fatalf("failed to write staging file %s: %v", name, err)
+	}
+	return s
+}
+
+// Validate runs engine.Validate on the migrations directory.
+func (s *Scenario) Validate() *Result {
+	s.t.Helper()
+	s.materialize()
+	migrationsDir := filepath.Join(s.dir, "migrations")
+
+	valResult, err := engine.Validate(migrationsDir)
+
+	r := &Result{
+		scenario: s,
+		err:      err,
+	}
+	if valResult != nil {
+		r.errorCount = len(valResult.Errors)
+		r.warnCount = len(valResult.Warnings)
+	}
+	return r
+}
+
+// Merge runs engine.Merge on the migrations directory with the given version.
+func (s *Scenario) Merge(version string) *Result {
+	s.t.Helper()
+	s.materialize()
+	migrationsDir := filepath.Join(s.dir, "migrations")
+
+	outPath, err := engine.Merge(migrationsDir, version)
+
+	return &Result{
+		scenario:   s,
+		err:        err,
+		outputPath: outPath,
+	}
+}
+
+// Init runs engine.Init on the scenario directory.
+func (s *Scenario) Init() *Result {
+	s.t.Helper()
+	// Do not call materialize -- Init creates the project structure itself.
+	return &Result{
+		scenario: s,
+		err:      engine.Init(s.dir),
+	}
+}
+
 // --- Assertion methods on Result ---
 
 // AssertSuccess asserts no error.
@@ -509,6 +571,47 @@ func (r *Result) AssertPending(n int) *Result {
 	r.scenario.t.Helper()
 	if r.pending != n {
 		r.scenario.t.Errorf("pending = %d, want %d", r.pending, n)
+	}
+	return r
+}
+
+// AssertErrors checks the number of validation errors.
+func (r *Result) AssertErrors(n int) *Result {
+	r.scenario.t.Helper()
+	if r.errorCount != n {
+		r.scenario.t.Errorf("error count = %d, want %d", r.errorCount, n)
+	}
+	return r
+}
+
+// AssertWarnings checks the number of validation warnings.
+func (r *Result) AssertWarnings(n int) *Result {
+	r.scenario.t.Helper()
+	if r.warnCount != n {
+		r.scenario.t.Errorf("warning count = %d, want %d", r.warnCount, n)
+	}
+	return r
+}
+
+// AssertOutputExists checks that the merge output file exists on disk.
+func (r *Result) AssertOutputExists() *Result {
+	r.scenario.t.Helper()
+	if r.outputPath == "" {
+		r.scenario.t.Errorf("output path is empty")
+		return r
+	}
+	if _, err := os.Stat(r.outputPath); err != nil {
+		r.scenario.t.Errorf("output file does not exist: %s", r.outputPath)
+	}
+	return r
+}
+
+// AssertPathExists checks that a path relative to the scenario dir exists.
+func (r *Result) AssertPathExists(rel string) *Result {
+	r.scenario.t.Helper()
+	absPath := filepath.Join(r.scenario.dir, rel)
+	if _, err := os.Stat(absPath); err != nil {
+		r.scenario.t.Errorf("path does not exist: %s", rel)
 	}
 	return r
 }
