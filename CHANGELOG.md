@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.4.1
+
+### Fixed
+
+- Goreleaser publish in CI now creates the conformance tarball before building
+
 ## 0.4.0
 
 ### Added
