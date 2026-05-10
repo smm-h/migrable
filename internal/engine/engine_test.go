@@ -64,6 +64,27 @@ func TestWriteFileAtomic(t *testing.T) {
 		}
 	})
 
+	t.Run("file has 0666 permissions before umask", func(t *testing.T) {
+		dir := t.TempDir()
+		path := filepath.Join(dir, "output.toml")
+
+		if err := WriteFileAtomic(path, []byte("data")); err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		info, err := os.Stat(path)
+		if err != nil {
+			t.Fatalf("failed to stat file: %v", err)
+		}
+		// os.Chmod(0o666) is applied, then the umask may reduce it.
+		// The typical umask is 0022, yielding 0644. We check that the
+		// file is NOT the restrictive 0600 that os.CreateTemp would set.
+		perm := info.Mode().Perm()
+		if perm == 0o600 {
+			t.Errorf("file permissions = %04o, want broader than 0600 (e.g. 0644 with typical umask)", perm)
+		}
+	})
+
 	t.Run("fails for nonexistent directory", func(t *testing.T) {
 		path := filepath.Join(t.TempDir(), "nonexistent", "output.toml")
 		err := WriteFileAtomic(path, []byte("data"))
