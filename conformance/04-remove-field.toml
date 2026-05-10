@@ -1,0 +1,19 @@
+description = "remove_field removes an existing field"
+
+input = '''
+[server]
+host = "localhost"
+port = 8080
+deprecated = true
+'''
+
+expected = '''
+[server]
+host = "localhost"
+port = 8080
+'''
+
+[[migration.structure]]
+op = "remove_field"
+path = "server.deprecated"
+down = { op = "add_field", path = "server.deprecated", type = "boolean", default = true }

@@ -1,0 +1,42 @@
+description = "set_value_where sets value on matching items using subset mode"
+
+input = '''
+[[servers]]
+name = "web"
+host = "web.example.com"
+port = 8080
+
+[[servers]]
+name = "db"
+host = "db.example.com"
+port = 5432
+
+[[servers]]
+name = "cache"
+host = "cache.example.com"
+port = 6379
+'''
+
+expected = '''
+[[servers]]
+name = "web"
+host = "web.example.com"
+port = 8080
+
+[[servers]]
+name = "db"
+host = "db.example.com"
+port = 5433
+
+[[servers]]
+name = "cache"
+host = "cache.example.com"
+port = 6379
+'''
+
+[[migration.data]]
+op = "set_value_where"
+path = "servers"
+match_mode = "subset"
+set = { port = 5433 }
+where = { name = "db" }

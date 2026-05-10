@@ -1,0 +1,19 @@
+description = "add_field on existing field is a no-op"
+
+input = '''
+[ui]
+font_size = 14
+color = "red"
+'''
+
+expected = '''
+[ui]
+font_size = 14
+color = "red"
+'''
+
+[[migration.structure]]
+op = "add_field"
+path = "ui.color"
+type = "string"
+default = "blue"

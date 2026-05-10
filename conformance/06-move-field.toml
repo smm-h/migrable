@@ -1,0 +1,25 @@
+description = "move_field moves a field between tables"
+
+input = '''
+[source]
+key = "value"
+other = 1
+
+[dest]
+existing = true
+'''
+
+expected = '''
+[source]
+other = 1
+
+[dest]
+existing = true
+key = "value"
+'''
+
+[[migration.structure]]
+op = "move_field"
+from = "source.key"
+to = "dest.key"
+down = { op = "move_field", from = "dest.key", to = "source.key" }

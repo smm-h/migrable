@@ -1,0 +1,36 @@
+description = "set_value_where with has_key match mode targets items that have a specific key"
+
+input = '''
+[[items]]
+name = "a"
+optional = "yes"
+
+[[items]]
+name = "b"
+
+[[items]]
+name = "c"
+optional = "no"
+'''
+
+expected = '''
+[[items]]
+name = "a"
+optional = "yes"
+has_opt = true
+
+[[items]]
+name = "b"
+
+[[items]]
+name = "c"
+optional = "no"
+has_opt = true
+'''
+
+[[migration.data]]
+op = "set_value_where"
+path = "items"
+match_mode = "has_key"
+where = "optional"
+set = { has_opt = true }

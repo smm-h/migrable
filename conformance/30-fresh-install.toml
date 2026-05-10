@@ -1,0 +1,28 @@
+description = "fresh install: empty input with ops building config from scratch"
+
+input = ''
+
+expected = '''
+[app]
+name = "myapp"
+version = "1.0"
+debug = false
+'''
+
+[[migration.structure]]
+op = "add_field"
+path = "app.name"
+type = "string"
+default = "myapp"
+
+[[migration.structure]]
+op = "add_field"
+path = "app.version"
+type = "string"
+default = "1.0"
+
+[[migration.structure]]
+op = "add_field"
+path = "app.debug"
+type = "boolean"
+default = false

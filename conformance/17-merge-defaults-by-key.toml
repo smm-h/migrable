@@ -1,0 +1,32 @@
+description = "merge_defaults_by_key matches by key field and adds missing attributes"
+
+input = '''
+[[plugins]]
+name = "auth"
+enabled = true
+
+[[plugins]]
+name = "logging"
+level = "info"
+'''
+
+expected = '''
+[[plugins]]
+name = "auth"
+enabled = true
+timeout = 30
+
+[[plugins]]
+name = "logging"
+level = "info"
+format = "json"
+'''
+
+[[migration.data]]
+op = "merge_defaults_by_key"
+path = "plugins"
+match_field = "name"
+defaults = [
+  { name = "auth", timeout = 30, enabled = false },
+  { name = "logging", level = "debug", format = "json" },
+]

@@ -1,0 +1,18 @@
+description = "raw op inserts content parsed as TOML"
+
+input = '''
+existing = true
+'''
+
+expected = '''
+existing = true
+new_key = 42
+new_str = "hello"
+'''
+
+[[migration.data]]
+op = "raw"
+content = '''
+new_key = 42
+new_str = "hello"
+'''

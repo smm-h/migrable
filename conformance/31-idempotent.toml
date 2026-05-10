@@ -1,0 +1,25 @@
+description = "add_field is idempotent: applying twice yields same result as once"
+
+input = '''
+[ui]
+font_size = 14
+color = "blue"
+'''
+
+expected = '''
+[ui]
+font_size = 14
+color = "blue"
+'''
+
+[[migration.structure]]
+op = "add_field"
+path = "ui.color"
+type = "string"
+default = "blue"
+
+[[migration.structure]]
+op = "add_field"
+path = "ui.color"
+type = "string"
+default = "blue"

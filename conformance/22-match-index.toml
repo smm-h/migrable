@@ -1,0 +1,31 @@
+description = "set_value_where with index match mode targets a specific position"
+
+input = '''
+[[items]]
+name = "first"
+
+[[items]]
+name = "second"
+
+[[items]]
+name = "third"
+'''
+
+expected = '''
+[[items]]
+name = "first"
+
+[[items]]
+name = "second"
+selected = true
+
+[[items]]
+name = "third"
+'''
+
+[[migration.data]]
+op = "set_value_where"
+path = "items"
+match_mode = "index"
+where = 1
+set = { selected = true }

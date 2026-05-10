@@ -1,0 +1,22 @@
+description = "apply then rollback via down ops restores original state"
+test_rollback = true
+
+input = '''
+[server]
+host = "localhost"
+port = 8080
+'''
+
+expected = '''
+[server]
+host = "localhost"
+port = 8080
+debug = false
+'''
+
+[[migration.structure]]
+op = "add_field"
+path = "server.debug"
+type = "boolean"
+default = false
+down = { op = "remove_field", path = "server.debug" }

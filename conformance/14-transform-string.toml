@@ -1,0 +1,14 @@
+description = "transform applies a CEL string expression"
+
+input = '''
+greeting = "hello"
+'''
+
+expected = '''
+greeting = "hello!"
+'''
+
+[[migration.data]]
+op = "transform"
+path = "greeting"
+expr = 'value + "!"'

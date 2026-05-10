@@ -1,0 +1,20 @@
+description = "drop_collection removes an entire table"
+
+input = '''
+[keep]
+a = 1
+
+[remove]
+b = 2
+c = 3
+'''
+
+expected = '''
+[keep]
+a = 1
+'''
+
+[[migration.structure]]
+op = "drop_collection"
+path = "remove"
+down = { op = "add_collection", path = "remove", fields = { b = 2, c = 3 } }

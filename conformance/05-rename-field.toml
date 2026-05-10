@@ -1,0 +1,19 @@
+description = "rename_field renames a key within its table"
+
+input = '''
+[server]
+host = "localhost"
+port = 8080
+'''
+
+expected = '''
+[server]
+hostname = "localhost"
+port = 8080
+'''
+
+[[migration.structure]]
+op = "rename_field"
+from = "server.host"
+to = "hostname"
+down = { op = "rename_field", from = "server.hostname", to = "host" }

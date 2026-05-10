@@ -1,0 +1,21 @@
+description = "merge_defaults_by_key does not add items for unmatched defaults"
+
+input = '''
+[[plugins]]
+name = "auth"
+enabled = true
+'''
+
+expected = '''
+[[plugins]]
+name = "auth"
+enabled = true
+'''
+
+[[migration.data]]
+op = "merge_defaults_by_key"
+path = "plugins"
+match_field = "name"
+defaults = [
+  { name = "metrics", endpoint = "/metrics" },
+]

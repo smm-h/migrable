@@ -1,0 +1,31 @@
+description = "set_value_where with exact match mode requires all keys to match"
+
+input = '''
+[[items]]
+name = "a"
+value = 1
+
+[[items]]
+name = "b"
+value = 2
+extra = true
+'''
+
+expected = '''
+[[items]]
+name = "a"
+value = 1
+matched = true
+
+[[items]]
+name = "b"
+value = 2
+extra = true
+'''
+
+[[migration.data]]
+op = "set_value_where"
+path = "items"
+match_mode = "exact"
+set = { matched = true }
+where = { name = "a", value = 1 }

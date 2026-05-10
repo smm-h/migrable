@@ -1,0 +1,31 @@
+description = "remove_where removes matching items from array"
+
+input = '''
+[[servers]]
+name = "web"
+port = 8080
+
+[[servers]]
+name = "db"
+port = 5432
+
+[[servers]]
+name = "cache"
+port = 6379
+'''
+
+expected = '''
+[[servers]]
+name = "web"
+port = 8080
+
+[[servers]]
+name = "cache"
+port = 6379
+'''
+
+[[migration.data]]
+op = "remove_where"
+path = "servers"
+match_mode = "subset"
+where = { name = "db" }

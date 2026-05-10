@@ -1,0 +1,21 @@
+description = "add_collection creates a new table with fields"
+
+input = '''
+[app]
+name = "myapp"
+'''
+
+expected = '''
+[app]
+name = "myapp"
+
+[logging]
+level = "info"
+enabled = true
+'''
+
+[[migration.structure]]
+op = "add_collection"
+path = "logging"
+fields = { level = "info", enabled = true }
+down = { op = "drop_collection", path = "logging" }

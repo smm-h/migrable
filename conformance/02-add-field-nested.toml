@@ -1,0 +1,21 @@
+description = "add_field creates nested path with intermediate tables"
+
+input = '''
+[app]
+name = "myapp"
+'''
+
+expected = '''
+[app]
+name = "myapp"
+
+[app.database]
+port = 5432
+'''
+
+[[migration.structure]]
+op = "add_field"
+path = "app.database.port"
+type = "integer"
+default = 5432
+down = { op = "remove_field", path = "app.database.port" }

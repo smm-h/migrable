@@ -1,0 +1,32 @@
+description = "set_value_where with match_mode all matches every item"
+
+input = '''
+[[items]]
+name = "a"
+
+[[items]]
+name = "b"
+
+[[items]]
+name = "c"
+'''
+
+expected = '''
+[[items]]
+name = "a"
+tagged = true
+
+[[items]]
+name = "b"
+tagged = true
+
+[[items]]
+name = "c"
+tagged = true
+'''
+
+[[migration.data]]
+op = "set_value_where"
+path = "items"
+match_mode = "all"
+set = { tagged = true }

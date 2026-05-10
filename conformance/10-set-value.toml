@@ -1,0 +1,16 @@
+description = "set_value unconditionally sets a value"
+
+input = '''
+[app]
+version = "1.0"
+'''
+
+expected = '''
+[app]
+version = "2.0"
+'''
+
+[[migration.data]]
+op = "set_value"
+path = "app.version"
+value = "2.0"

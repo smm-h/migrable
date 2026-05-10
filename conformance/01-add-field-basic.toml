@@ -1,0 +1,19 @@
+description = "add_field creates a new field with default value"
+
+input = '''
+[ui]
+font_size = 14
+'''
+
+expected = '''
+[ui]
+font_size = 14
+color = "blue"
+'''
+
+[[migration.structure]]
+op = "add_field"
+path = "ui.color"
+type = "string"
+default = "blue"
+down = { op = "remove_field", path = "ui.color" }

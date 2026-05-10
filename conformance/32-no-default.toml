@@ -1,0 +1,16 @@
+description = "add_field without default does not create the field"
+
+input = '''
+[app]
+name = "myapp"
+'''
+
+expected = '''
+[app]
+name = "myapp"
+'''
+
+[[migration.structure]]
+op = "add_field"
+path = "app.optional"
+type = "string"

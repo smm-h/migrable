@@ -1,0 +1,14 @@
+description = "append adds an element to an existing array"
+
+input = '''
+tags = ["web", "prod"]
+'''
+
+expected = '''
+tags = ["web", "prod", "v2"]
+'''
+
+[[migration.data]]
+op = "append"
+path = "tags"
+value = "v2"

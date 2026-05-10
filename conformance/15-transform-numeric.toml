@@ -1,0 +1,14 @@
+description = "transform applies a CEL numeric expression"
+
+input = '''
+count = 10
+'''
+
+expected = '''
+count = 20
+'''
+
+[[migration.data]]
+op = "transform"
+path = "count"
+expr = "value * 2"

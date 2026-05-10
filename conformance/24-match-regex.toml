@@ -1,0 +1,38 @@
+description = "set_value_where with regex match mode uses pattern matching"
+
+input = '''
+[[servers]]
+name = "prod-web-01"
+port = 8080
+
+[[servers]]
+name = "staging-web-01"
+port = 8081
+
+[[servers]]
+name = "prod-db-01"
+port = 5432
+'''
+
+expected = '''
+[[servers]]
+name = "prod-web-01"
+port = 8080
+is_prod = true
+
+[[servers]]
+name = "staging-web-01"
+port = 8081
+
+[[servers]]
+name = "prod-db-01"
+port = 5432
+is_prod = true
+'''
+
+[[migration.data]]
+op = "set_value_where"
+path = "servers"
+match_mode = "regex"
+set = { is_prod = true }
+where = { name = "prod-.*" }

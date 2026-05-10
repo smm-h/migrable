@@ -1,0 +1,18 @@
+description = "merge_defaults adds missing keys without overwriting existing"
+
+input = '''
+[server]
+host = "localhost"
+'''
+
+expected = '''
+[server]
+host = "localhost"
+port = 8080
+debug = false
+'''
+
+[[migration.data]]
+op = "merge_defaults"
+path = "server"
+value = { host = "default.example.com", port = 8080, debug = false }

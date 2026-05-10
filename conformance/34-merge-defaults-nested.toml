@@ -1,0 +1,24 @@
+description = "merge_defaults handles deep nested table merge"
+
+input = '''
+[server]
+host = "localhost"
+
+[server.tls]
+cert = "my.crt"
+'''
+
+expected = '''
+[server]
+host = "localhost"
+port = 443
+
+[server.tls]
+cert = "my.crt"
+key = "default.key"
+'''
+
+[[migration.data]]
+op = "merge_defaults"
+path = "server"
+value = { port = 443, tls = { cert = "default.crt", key = "default.key" } }
