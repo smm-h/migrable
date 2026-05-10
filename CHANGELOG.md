@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.5.0
+
+### Added
+
+- 9 new conformance tests (44 total): rollback scenarios, transform variety (float, string replace, size), no-op edge cases, match mode edge cases
+- API documentation site via selfdoc
+
 ## 0.4.2
 
 ### Fixed
