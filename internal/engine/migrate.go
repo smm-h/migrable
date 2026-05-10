@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"os"
@@ -158,14 +159,19 @@ func Migrate(cfg *config.Config, dryRun bool) (*MigrateResult, error) {
 		result.Applied++
 		result.ToVersion = meta.Version
 
-		// If not dry-run, write all files transactionally after each migration.
+		// If not dry-run, write only files that changed after this migration.
 		if !dryRun {
 			fileData := make(map[string][]byte, len(docs))
 			for key, doc := range docs {
-				fileData[filePaths[key]] = doc.Bytes()
+				serialized := doc.Bytes()
+				if !bytes.Equal(backups[key], serialized) {
+					fileData[filePaths[key]] = serialized
+				}
 			}
-			if writeErr := WriteFilesAtomic(fileData); writeErr != nil {
-				return nil, fmt.Errorf("migration %s: %w", meta.Version, writeErr)
+			if len(fileData) > 0 {
+				if writeErr := WriteFilesAtomic(fileData); writeErr != nil {
+					return nil, fmt.Errorf("migration %s: %w", meta.Version, writeErr)
+				}
 			}
 		}
 	}

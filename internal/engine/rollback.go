@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"os"
@@ -182,10 +183,15 @@ func Rollback(cfg *config.Config, dryRun bool) (*MigrateResult, error) {
 	if !dryRun {
 		fileData := make(map[string][]byte, len(docs))
 		for key, doc := range docs {
-			fileData[filePaths[key]] = doc.Bytes()
+			serialized := doc.Bytes()
+			if !bytes.Equal(backups[key], serialized) {
+				fileData[filePaths[key]] = serialized
+			}
 		}
-		if writeErr := WriteFilesAtomic(fileData); writeErr != nil {
-			return nil, fmt.Errorf("rollback %s: %w", currentVersion, writeErr)
+		if len(fileData) > 0 {
+			if writeErr := WriteFilesAtomic(fileData); writeErr != nil {
+				return nil, fmt.Errorf("rollback %s: %w", currentVersion, writeErr)
+			}
 		}
 	}
 
