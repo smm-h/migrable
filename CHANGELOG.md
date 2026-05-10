@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.0.0
+
+Initial development version.
+
 ## 0.1.0
 
 Initial release. Declarative, comment-preserving TOML config file migrations.
