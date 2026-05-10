@@ -20,6 +20,8 @@ archives:
       - goos: windows
         formats:
           - zip
+    files:
+      - docs/man/*.1
 
 checksum:
   name_template: "checksums.txt"
