@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.1.2
+
+### Changed
+
+- Version detection uses a single source of truth (`version.go` at module root) for both goreleaser builds and `go install`
+- Updated rlsbl scaffolding to v0.16
+
 ## 0.1.1
 
 ### Fixed
