@@ -1,0 +1,40 @@
+description = "round-trip formatting preservation with expected_bytes"
+
+input = '''
+# Application config
+name = "myapp"
+
+# Server settings
+[server]
+host = "localhost"
+port = 8080
+'''
+
+expected = '''
+# Application config
+name = "myapp"
+
+# Server settings
+[server]
+host = "localhost"
+port = 8080
+debug = false
+'''
+
+expected_bytes = '''
+# Application config
+name = "myapp"
+
+# Server settings
+[server]
+host = "localhost"
+port = 8080
+debug = false
+'''
+
+[[migration.structure]]
+op = "add_field"
+path = "server.debug"
+type = "boolean"
+default = false
+down = { op = "remove_field", path = "server.debug" }
