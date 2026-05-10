@@ -1,6 +1,11 @@
 package cli
 
-import "github.com/spf13/cobra"
+import (
+	"runtime/debug"
+	"strings"
+
+	"github.com/spf13/cobra"
+)
 
 var version = "dev"
 
@@ -16,6 +21,11 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
+	if version == "dev" {
+		if info, ok := debug.ReadBuildInfo(); ok && info.Main.Version != "" && info.Main.Version != "(devel)" {
+			version = strings.TrimPrefix(info.Main.Version, "v")
+		}
+	}
 	rootCmd.Version = version
 	rootCmd.PersistentFlags().StringVar(&ConfigDir, "config-dir", "", "path to configuration directory")
 	rootCmd.PersistentFlags().BoolVar(&Quiet, "quiet", false, "suppress non-error output")
