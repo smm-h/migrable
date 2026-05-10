@@ -24,6 +24,7 @@ type Scenario struct {
 	versionFile string
 	inputs      map[string]string // key -> TOML content
 	migrations  map[string]string // version -> TOML content
+	materialized bool             // true after files are written to disk
 }
 
 // Result holds the outcome of a scenario execution step.
@@ -91,9 +92,13 @@ func (s *Scenario) Env(key, value string) *Scenario {
 	return s
 }
 
-// buildConfig constructs a config.Config and writes all input files and migrations to disk.
-func (s *Scenario) buildConfig() *config.Config {
+// materialize writes input files and migrations to disk once.
+func (s *Scenario) materialize() {
 	s.t.Helper()
+	if s.materialized {
+		return
+	}
+	s.materialized = true
 
 	// Write input files.
 	for key, content := range s.inputs {
@@ -119,6 +124,12 @@ func (s *Scenario) buildConfig() *config.Config {
 			s.t.Fatalf("failed to write migration %s: %v", version, err)
 		}
 	}
+}
+
+// buildConfig constructs a config.Config, materializing files if needed.
+func (s *Scenario) buildConfig() *config.Config {
+	s.t.Helper()
+	s.materialize()
 
 	cfg := &config.Config{
 		MigrationsDir: "migrations",
