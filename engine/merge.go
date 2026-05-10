@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	tomledit "github.com/smm-h/go-toml-edit"
-	"github.com/smm-h/migrable/internal/ops"
+	"github.com/smm-h/migrable/ops"
 )
 
 // Merge combines staging files from next/ into a single versioned migration file.

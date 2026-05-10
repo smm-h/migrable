@@ -9,7 +9,7 @@ import (
 	"time"
 
 	tomledit "github.com/smm-h/go-toml-edit"
-	"github.com/smm-h/migrable/internal/ops"
+	"github.com/smm-h/migrable/ops"
 )
 
 // ValidationIssue describes a single problem found during validation.

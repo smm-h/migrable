@@ -10,8 +10,8 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 	tomledit "github.com/smm-h/go-toml-edit"
-	"github.com/smm-h/migrable/internal/config"
-	"github.com/smm-h/migrable/internal/ops"
+	"github.com/smm-h/migrable/config"
+	"github.com/smm-h/migrable/ops"
 )
 
 // RollbackBlockedError is returned when a rollback cannot proceed because

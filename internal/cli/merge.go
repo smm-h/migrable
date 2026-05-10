@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 
 	"github.com/Masterminds/semver/v3"
-	"github.com/smm-h/migrable/internal/config"
-	"github.com/smm-h/migrable/internal/engine"
+	"github.com/smm-h/migrable/config"
+	"github.com/smm-h/migrable/engine"
 	"github.com/spf13/cobra"
 )
 

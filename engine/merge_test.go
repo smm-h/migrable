@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/migrable/internal/ops"
+	"github.com/smm-h/migrable/ops"
 )
 
 func TestMerge_TwoStagingFiles(t *testing.T) {

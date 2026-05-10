@@ -11,9 +11,9 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 	tomledit "github.com/smm-h/go-toml-edit"
+	"github.com/smm-h/migrable/config"
+	"github.com/smm-h/migrable/engine"
 	"github.com/smm-h/migrable/internal/cli"
-	"github.com/smm-h/migrable/internal/config"
-	"github.com/smm-h/migrable/internal/engine"
 )
 
 // Scenario represents an isolated migration test environment.

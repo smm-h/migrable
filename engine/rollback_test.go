@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	tomledit "github.com/smm-h/go-toml-edit"
-	"github.com/smm-h/migrable/internal/config"
+	"github.com/smm-h/migrable/config"
 )
 
 func TestRollback_Basic(t *testing.T) {

@@ -3,7 +3,7 @@ package cli
 import (
 	"fmt"
 
-	"github.com/smm-h/migrable/internal/engine"
+	"github.com/smm-h/migrable/engine"
 	"github.com/spf13/cobra"
 )
 

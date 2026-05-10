@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	tomledit "github.com/smm-h/go-toml-edit"
-	"github.com/smm-h/migrable/internal/config"
+	"github.com/smm-h/migrable/config"
 )
 
 // setupMultiFileProject creates a temporary multi-file project with migrations.

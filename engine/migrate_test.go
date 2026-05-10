@@ -8,7 +8,7 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 	tomledit "github.com/smm-h/go-toml-edit"
-	"github.com/smm-h/migrable/internal/config"
+	"github.com/smm-h/migrable/config"
 )
 
 // setupProject creates a temporary project directory with migrable.toml,
