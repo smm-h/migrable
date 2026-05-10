@@ -7,8 +7,9 @@ set -euo pipefail
 
 echo "Post-release: v$RLSBL_VERSION"
 
-if [ -f ~/Projects/.selfdoc.env ]; then
-  set -a && source ~/Projects/.selfdoc.env && set +a
+if [ -f ~/Projects/.env ]; then
+  set -a && source ~/Projects/.env && set +a
+  export CLOUDFLARE_API_TOKEN="${CLOUDFLARE_PAGES_API_TOKEN:-}"
 fi
 echo "Building and deploying docs..."
 selfdoc build && selfdoc deploy
