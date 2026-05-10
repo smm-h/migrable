@@ -1,9 +1,12 @@
 {
   "name": "migrable",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Declarative config file migrations for TOML",
   "license": "MIT",
-  "repository": "github:smm-h/migrable",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/smm-h/migrable.git"
+  },
   "homepage": "https://github.com/smm-h/migrable",
   "scripts": {
     "postinstall": "node install.js"
