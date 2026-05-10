@@ -1,0 +1,15 @@
+description = "Add auto-save and font size settings"
+
+[[structure]]
+op = "add_field"
+path = "auto_save"
+type = "boolean"
+default = true
+down = { op = "remove_field", path = "auto_save" }
+
+[[structure]]
+op = "add_field"
+path = "font_size"
+type = "integer"
+default = 14
+down = { op = "remove_field", path = "font_size" }

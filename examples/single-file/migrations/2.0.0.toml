@@ -1,0 +1,14 @@
+description = "Rename theme to color_scheme, add dark mode support"
+
+[[structure]]
+op = "rename_field"
+from = "theme"
+to = "color_scheme"
+down = { op = "rename_field", from = "color_scheme", to = "theme" }
+
+[[structure]]
+op = "add_field"
+path = "dark_mode"
+type = "boolean"
+default = false
+down = { op = "remove_field", path = "dark_mode" }

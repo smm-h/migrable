@@ -1,0 +1,6 @@
+migrations_dir = "migrations"
+version_file = "config"
+
+[files]
+config = "config.toml"
+keybindings = "keybindings.toml"

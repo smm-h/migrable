@@ -1,0 +1,15 @@
+description = "Add undo keybinding and auto-save config"
+
+[[structure]]
+op = "add_field"
+path = "keybindings.undo"
+type = "string"
+default = "Ctrl+Z"
+down = { op = "remove_field", path = "keybindings.undo" }
+
+[[structure]]
+op = "add_field"
+path = "config.auto_save"
+type = "boolean"
+default = true
+down = { op = "remove_field", path = "config.auto_save" }
