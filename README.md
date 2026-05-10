@@ -98,6 +98,14 @@ result, _ := engine.Migrate(cfg, false)
 | `migrable merge <version>` | Combine staging files |
 | `migrable init` | Scaffold new project |
 
+## Shell completions
+
+```
+migrable completion bash > /etc/bash_completion.d/migrable
+migrable completion zsh > "${fpath[1]}/_migrable"
+migrable completion fish > ~/.config/fish/completions/migrable.fish
+```
+
 ## License
 
 MIT
