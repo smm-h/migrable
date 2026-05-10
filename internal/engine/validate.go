@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	tomledit "github.com/smm-h/go-toml-edit"
 	"github.com/smm-h/migrable/internal/ops"
 )
 
@@ -160,6 +161,18 @@ func checkDefaultType(declaredType string, defaultVal any) error {
 	case "datetime":
 		if _, ok := defaultVal.(time.Time); !ok {
 			return fmt.Errorf("default value has type %T, expected datetime", defaultVal)
+		}
+	case "local_datetime":
+		if _, ok := defaultVal.(tomledit.LocalDateTime); !ok {
+			return fmt.Errorf("default value has type %T, expected local_datetime", defaultVal)
+		}
+	case "local_date":
+		if _, ok := defaultVal.(tomledit.LocalDate); !ok {
+			return fmt.Errorf("default value has type %T, expected local_date", defaultVal)
+		}
+	case "local_time":
+		if _, ok := defaultVal.(tomledit.LocalTime); !ok {
+			return fmt.Errorf("default value has type %T, expected local_time", defaultVal)
 		}
 	case "array":
 		if _, ok := defaultVal.([]any); !ok {

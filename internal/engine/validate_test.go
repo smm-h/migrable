@@ -205,6 +205,147 @@ func TestValidate_EmptyDirectory(t *testing.T) {
 	}
 }
 
+func TestValidate_LocalDateTimeCorrectDefault(t *testing.T) {
+	dir := t.TempDir()
+	migration := `description = "local datetime test"
+
+[[structure]]
+op = "add_field"
+path = "event.created_at"
+type = "local_datetime"
+default = 1979-05-27T07:32:00
+down = {op = "remove_field", path = "event.created_at"}
+`
+	os.WriteFile(filepath.Join(dir, "1.0.0.toml"), []byte(migration), 0o644)
+
+	result, err := Validate(dir)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(result.Errors) != 0 {
+		t.Errorf("expected 0 errors, got %d: %v", len(result.Errors), result.Errors)
+	}
+}
+
+func TestValidate_LocalDateTimeWrongDefault(t *testing.T) {
+	dir := t.TempDir()
+	migration := `description = "local datetime mismatch"
+
+[[structure]]
+op = "add_field"
+path = "event.created_at"
+type = "local_datetime"
+default = "not a datetime"
+down = {op = "remove_field", path = "event.created_at"}
+`
+	os.WriteFile(filepath.Join(dir, "1.0.0.toml"), []byte(migration), 0o644)
+
+	result, err := Validate(dir)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(result.Errors) != 1 {
+		t.Fatalf("expected 1 error, got %d: %v", len(result.Errors), result.Errors)
+	}
+	if !strings.Contains(result.Errors[0].Message, "expected local_datetime") {
+		t.Errorf("error message = %q, want it to contain 'expected local_datetime'", result.Errors[0].Message)
+	}
+}
+
+func TestValidate_LocalDateCorrectDefault(t *testing.T) {
+	dir := t.TempDir()
+	migration := `description = "local date test"
+
+[[structure]]
+op = "add_field"
+path = "event.date"
+type = "local_date"
+default = 1979-05-27
+down = {op = "remove_field", path = "event.date"}
+`
+	os.WriteFile(filepath.Join(dir, "1.0.0.toml"), []byte(migration), 0o644)
+
+	result, err := Validate(dir)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(result.Errors) != 0 {
+		t.Errorf("expected 0 errors, got %d: %v", len(result.Errors), result.Errors)
+	}
+}
+
+func TestValidate_LocalDateWrongDefault(t *testing.T) {
+	dir := t.TempDir()
+	migration := `description = "local date mismatch"
+
+[[structure]]
+op = "add_field"
+path = "event.date"
+type = "local_date"
+default = 42
+down = {op = "remove_field", path = "event.date"}
+`
+	os.WriteFile(filepath.Join(dir, "1.0.0.toml"), []byte(migration), 0o644)
+
+	result, err := Validate(dir)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(result.Errors) != 1 {
+		t.Fatalf("expected 1 error, got %d: %v", len(result.Errors), result.Errors)
+	}
+	if !strings.Contains(result.Errors[0].Message, "expected local_date") {
+		t.Errorf("error message = %q, want it to contain 'expected local_date'", result.Errors[0].Message)
+	}
+}
+
+func TestValidate_LocalTimeCorrectDefault(t *testing.T) {
+	dir := t.TempDir()
+	migration := `description = "local time test"
+
+[[structure]]
+op = "add_field"
+path = "event.time"
+type = "local_time"
+default = 07:32:00
+down = {op = "remove_field", path = "event.time"}
+`
+	os.WriteFile(filepath.Join(dir, "1.0.0.toml"), []byte(migration), 0o644)
+
+	result, err := Validate(dir)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(result.Errors) != 0 {
+		t.Errorf("expected 0 errors, got %d: %v", len(result.Errors), result.Errors)
+	}
+}
+
+func TestValidate_LocalTimeWrongDefault(t *testing.T) {
+	dir := t.TempDir()
+	migration := `description = "local time mismatch"
+
+[[structure]]
+op = "add_field"
+path = "event.time"
+type = "local_time"
+default = true
+down = {op = "remove_field", path = "event.time"}
+`
+	os.WriteFile(filepath.Join(dir, "1.0.0.toml"), []byte(migration), 0o644)
+
+	result, err := Validate(dir)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(result.Errors) != 1 {
+		t.Fatalf("expected 1 error, got %d: %v", len(result.Errors), result.Errors)
+	}
+	if !strings.Contains(result.Errors[0].Message, "expected local_time") {
+		t.Errorf("error message = %q, want it to contain 'expected local_time'", result.Errors[0].Message)
+	}
+}
+
 func TestValidate_InvalidTOML(t *testing.T) {
 	dir := t.TempDir()
 	os.WriteFile(filepath.Join(dir, "1.0.0.toml"), []byte("this is not { valid toml"), 0o644)
