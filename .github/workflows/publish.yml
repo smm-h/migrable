@@ -18,6 +18,10 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
+      - name: Create conformance tarball
+        run: |
+          mkdir -p dist
+          tar czf dist/conformance-tests.tar.gz -C conformance --exclude='*_test.go' .
       - uses: goreleaser/goreleaser-action@v7
         with:
           version: "~> v2"
