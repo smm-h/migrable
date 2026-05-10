@@ -1,7 +1,7 @@
 version: 2
 
 builds:
-  - main: ./cmd/migrable
+  - main: .
     binary: migrable
     ldflags:
       - -s -w -X github.com/smm-h/migrable/internal/cli.version={{.Version}}
