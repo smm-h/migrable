@@ -1,0 +1,35 @@
+description = "subset match succeeds when items have extra keys beyond the where clause"
+
+input = '''
+[[entries]]
+name = "alpha"
+value = 1
+extra = "foo"
+tag = "important"
+
+[[entries]]
+name = "beta"
+value = 2
+extra = "bar"
+'''
+
+expected = '''
+[[entries]]
+name = "alpha"
+value = 1
+extra = "foo"
+tag = "important"
+matched = true
+
+[[entries]]
+name = "beta"
+value = 2
+extra = "bar"
+'''
+
+[[migration.data]]
+op = "set_value_where"
+path = "entries"
+match_mode = "subset"
+set = { matched = true }
+where = { name = "alpha" }

@@ -1,0 +1,14 @@
+description = "transform uses CEL size function on a string"
+
+input = '''
+label = "hi"
+'''
+
+expected = '''
+label = "hi..."
+'''
+
+[[migration.data]]
+op = "transform"
+path = "label"
+expr = 'size(value) > 3 ? value : value + "..."'

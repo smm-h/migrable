@@ -1,0 +1,17 @@
+description = "rename_field where source does not exist is a no-op"
+
+input = '''
+[config]
+debug = false
+'''
+
+expected = '''
+[config]
+debug = false
+'''
+
+[[migration.structure]]
+op = "rename_field"
+from = "config.nonexistent"
+to = "missing_target"
+down = { op = "rename_field", from = "config.missing_target", to = "nonexistent" }

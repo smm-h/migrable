@@ -1,0 +1,20 @@
+description = "rename forward then rename back on rollback"
+test_rollback = true
+
+input = '''
+[database]
+host = "localhost"
+port = 5432
+'''
+
+expected = '''
+[database]
+hostname = "localhost"
+port = 5432
+'''
+
+[[migration.structure]]
+op = "rename_field"
+from = "database.host"
+to = "hostname"
+down = { op = "rename_field", from = "database.hostname", to = "host" }

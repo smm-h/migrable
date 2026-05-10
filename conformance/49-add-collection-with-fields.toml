@@ -1,0 +1,22 @@
+description = "add_collection creates a table with initial fields"
+
+input = '''
+[app]
+name = "myapp"
+'''
+
+expected = '''
+[app]
+name = "myapp"
+
+[cache]
+enabled = true
+ttl = 300
+backend = "redis"
+'''
+
+[[migration.structure]]
+op = "add_collection"
+path = "cache"
+fields = { enabled = true, ttl = 300, backend = "redis" }
+down = { op = "drop_collection", path = "cache" }

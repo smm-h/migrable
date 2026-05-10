@@ -1,0 +1,18 @@
+description = "remove_field on a missing path is a no-op"
+
+input = '''
+[server]
+host = "localhost"
+port = 8080
+'''
+
+expected = '''
+[server]
+host = "localhost"
+port = 8080
+'''
+
+[[migration.structure]]
+op = "remove_field"
+path = "server.nonexistent"
+down = { op = "add_field", path = "server.nonexistent", type = "string", default = "placeholder" }

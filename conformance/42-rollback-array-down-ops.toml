@@ -1,0 +1,23 @@
+description = "rollback with array-valued down ops"
+test_rollback = true
+
+input = '''
+[ui]
+font_size = 14
+'''
+
+expected = '''
+[ui]
+font_size = 14
+theme = "dark"
+sidebar = true
+'''
+
+[[migration.structure]]
+op = "merge_defaults"
+path = "ui"
+value = { theme = "dark", sidebar = true }
+down = [
+  { op = "remove_field", path = "ui.theme" },
+  { op = "remove_field", path = "ui.sidebar" },
+]

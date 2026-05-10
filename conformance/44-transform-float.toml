@@ -1,0 +1,14 @@
+description = "transform applies a CEL float multiplication"
+
+input = '''
+rate = 2.0
+'''
+
+expected = '''
+rate = 3.0
+'''
+
+[[migration.data]]
+op = "transform"
+path = "rate"
+expr = "value * 1.5"

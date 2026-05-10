@@ -1,0 +1,14 @@
+description = "transform applies CEL string replace extension"
+
+input = '''
+url = "http://old.example.com/api"
+'''
+
+expected = '''
+url = "http://new.example.com/api"
+'''
+
+[[migration.data]]
+op = "transform"
+path = "url"
+expr = 'value.replace("old", "new")'
