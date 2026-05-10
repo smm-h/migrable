@@ -2,11 +2,15 @@
 
 ## Unreleased
 
-## 0.4.1
+## 0.4.2
 
 ### Fixed
 
-- Goreleaser publish in CI now creates the conformance tarball before building
+- Goreleaser publish: conformance tarball uploaded after build (--clean was wiping it)
+
+## 0.4.1
+
+Internal improvements.
 
 ## 0.4.0
 
