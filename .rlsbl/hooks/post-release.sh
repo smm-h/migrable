@@ -7,5 +7,8 @@ set -euo pipefail
 
 echo "Post-release: v$RLSBL_VERSION"
 
+if [ -f ~/Projects/.selfdoc.env ]; then
+  set -a && source ~/Projects/.selfdoc.env && set +a
+fi
 echo "Building and deploying docs..."
 selfdoc build && selfdoc deploy
