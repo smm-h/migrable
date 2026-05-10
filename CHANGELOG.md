@@ -10,7 +10,9 @@
 
 ## 0.4.1
 
-Internal improvements.
+### Fixed
+
+- Attempted fix for conformance tarball in CI publish (incomplete, see 0.4.2)
 
 ## 0.4.0
 
