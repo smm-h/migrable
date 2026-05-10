@@ -4,7 +4,7 @@ builds:
   - main: .
     binary: migrable
     ldflags:
-      - -s -w -X github.com/smm-h/migrable/internal/cli.version={{.Version}}
+      - -s -w -X main.Version={{.Version}}
     goos:
       - linux
       - darwin

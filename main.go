@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
+	cli.SetVersion(Version)
 	if err := cli.Execute(); err != nil {
 		var exitErr *cli.ExitError
 		if errors.As(err, &exitErr) {
