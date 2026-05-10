@@ -25,13 +25,9 @@ migrations_dir = "migrations"
 // migrable.toml, the migrations directory, and a next/ staging directory.
 func Init(dir string) error {
 	configPath := filepath.Join(dir, "migrable.toml")
-	dotConfigPath := filepath.Join(dir, ".migrable", "migrable.toml")
 
 	if fileExists(configPath) {
 		return fmt.Errorf("already initialized: %s exists", configPath)
-	}
-	if fileExists(dotConfigPath) {
-		return fmt.Errorf("already initialized: %s exists", dotConfigPath)
 	}
 
 	migrationsDir := filepath.Join(dir, "migrations")

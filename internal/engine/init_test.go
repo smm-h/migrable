@@ -63,19 +63,21 @@ func TestInit_AlreadyInitialized(t *testing.T) {
 	}
 }
 
-func TestInit_AlreadyInitializedDotMigrable(t *testing.T) {
+func TestInit_IgnoresDotMigrableSubdir(t *testing.T) {
 	dir := t.TempDir()
 
-	// Create .migrable/migrable.toml.
+	// Create .migrable/migrable.toml -- Init should ignore it and proceed.
 	dotDir := filepath.Join(dir, ".migrable")
 	os.MkdirAll(dotDir, 0o755)
 	os.WriteFile(filepath.Join(dotDir, "migrable.toml"), []byte("# existing\n"), 0o644)
 
-	err := Init(dir)
-	if err == nil {
-		t.Fatal("expected error for already initialized project")
+	if err := Init(dir); err != nil {
+		t.Fatalf("Init should succeed when only .migrable/migrable.toml exists: %v", err)
 	}
-	if !strings.Contains(err.Error(), "already initialized") {
-		t.Errorf("error = %q, want it to contain 'already initialized'", err)
+
+	// migrable.toml should have been created at project root.
+	configPath := filepath.Join(dir, "migrable.toml")
+	if _, err := os.Stat(configPath); err != nil {
+		t.Fatalf("migrable.toml not created at project root: %v", err)
 	}
 }

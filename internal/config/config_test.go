@@ -221,32 +221,8 @@ app = "app.toml"
 		}
 	})
 
-	t.Run("found in .migrable subdir", func(t *testing.T) {
+	t.Run("ignores .migrable subdir", func(t *testing.T) {
 		dir := t.TempDir()
-		subDir := filepath.Join(dir, ".migrable")
-		os.Mkdir(subDir, 0o755)
-		writeFile(t, filepath.Join(subDir, configFileName), `migrations_dir = "m"
-[files]
-app = "app.toml"
-`)
-		origDir := chdir(t, dir)
-		defer os.Chdir(origDir)
-
-		cfg, err := Load("")
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
-		if cfg.MigrationsDir != "m" {
-			t.Errorf("MigrationsDir = %q, want %q", cfg.MigrationsDir, "m")
-		}
-	})
-
-	t.Run("collision error", func(t *testing.T) {
-		dir := t.TempDir()
-		writeFile(t, filepath.Join(dir, configFileName), `migrations_dir = "m"
-[files]
-app = "app.toml"
-`)
 		subDir := filepath.Join(dir, ".migrable")
 		os.Mkdir(subDir, 0o755)
 		writeFile(t, filepath.Join(subDir, configFileName), `migrations_dir = "m"
@@ -258,10 +234,34 @@ app = "app.toml"
 
 		_, err := Load("")
 		if err == nil {
-			t.Fatal("expected ambiguous config error, got nil")
+			t.Fatal("expected not found error when config only in .migrable/")
 		}
-		if !strings.Contains(err.Error(), "ambiguous") {
-			t.Fatalf("error = %q, want it to contain %q", err.Error(), "ambiguous")
+		if !strings.Contains(err.Error(), "not found") {
+			t.Fatalf("error = %q, want it to contain %q", err.Error(), "not found")
+		}
+	})
+
+	t.Run("current dir preferred over .migrable subdir", func(t *testing.T) {
+		dir := t.TempDir()
+		writeFile(t, filepath.Join(dir, configFileName), `migrations_dir = "m"
+[files]
+app = "app.toml"
+`)
+		subDir := filepath.Join(dir, ".migrable")
+		os.Mkdir(subDir, 0o755)
+		writeFile(t, filepath.Join(subDir, configFileName), `migrations_dir = "other"
+[files]
+app = "other.toml"
+`)
+		origDir := chdir(t, dir)
+		defer os.Chdir(origDir)
+
+		cfg, err := Load("")
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.MigrationsDir != "m" {
+			t.Errorf("MigrationsDir = %q, want %q (should load from current dir, not .migrable/)", cfg.MigrationsDir, "m")
 		}
 	})
 

@@ -43,22 +43,11 @@ func findConfig(configDir string) (string, error) {
 		return path, nil
 	}
 
-	dotPath := filepath.Join(".", configFileName)
-	subPath := filepath.Join(".migrable", configFileName)
-
-	dotExists := fileExists(dotPath)
-	subExists := fileExists(subPath)
-
-	if dotExists && subExists {
-		return "", fmt.Errorf("ambiguous config: found %s in both . and .migrable/", configFileName)
+	path := filepath.Join(".", configFileName)
+	if !fileExists(path) {
+		return "", fmt.Errorf("config not found: %s not found in current directory", configFileName)
 	}
-	if dotExists {
-		return dotPath, nil
-	}
-	if subExists {
-		return subPath, nil
-	}
-	return "", fmt.Errorf("config not found: %s not found in . or .migrable/", configFileName)
+	return path, nil
 }
 
 func fileExists(path string) bool {
