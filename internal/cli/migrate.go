@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"errors"
 	"fmt"
 
 	tomledit "github.com/smm-h/go-toml-edit"
@@ -9,7 +10,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var dryRun bool
+var (
+	dryRun   bool
+	rollback bool
+)
 
 var migrateCmd = &cobra.Command{
 	Use:   "migrate",
@@ -19,6 +23,7 @@ var migrateCmd = &cobra.Command{
 
 func init() {
 	migrateCmd.Flags().BoolVar(&dryRun, "dry-run", false, "preview changes without writing")
+	migrateCmd.Flags().BoolVar(&rollback, "rollback", false, "roll back the most recently applied migration")
 	rootCmd.AddCommand(migrateCmd)
 }
 
@@ -26,6 +31,10 @@ func runMigrate(cmd *cobra.Command, args []string) error {
 	cfg, err := config.Load(ConfigDir)
 	if err != nil {
 		return NewExitError(ExitGeneralError, "%v", err)
+	}
+
+	if rollback {
+		return runRollback(cmd, cfg)
 	}
 
 	result, err := engine.Migrate(cfg, dryRun)
@@ -56,6 +65,43 @@ func runMigrate(cmd *cobra.Command, args []string) error {
 
 	if Verbose {
 		printVerboseMigrations(cmd, result)
+	}
+
+	return nil
+}
+
+func runRollback(cmd *cobra.Command, cfg *config.Config) error {
+	result, err := engine.Rollback(cfg, dryRun)
+	if err != nil {
+		var blocked *engine.RollbackBlockedError
+		if errors.As(err, &blocked) {
+			return NewExitError(ExitRollbackBlocked, "%v", err)
+		}
+		return NewExitError(ExitMigrationError, "%v", err)
+	}
+
+	if Quiet {
+		return nil
+	}
+
+	w := cmd.OutOrStdout()
+
+	if dryRun {
+		fmt.Fprintf(w, "Dry run: would roll back migration %s. Version: %s -> %s\n",
+			result.FromVersion, result.FromVersion, result.ToVersion)
+		printDryRunChanges(cmd, result)
+		return nil
+	}
+
+	fmt.Fprintf(w, "Rolled back migration %s. Version: %s -> %s\n",
+		result.FromVersion, result.FromVersion, result.ToVersion)
+
+	if Verbose {
+		for ver, desc := range result.Descriptions {
+			if desc != "" {
+				fmt.Fprintf(w, "  %s: %s\n", ver, desc)
+			}
+		}
 	}
 
 	return nil
