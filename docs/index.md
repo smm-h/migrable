@@ -6,23 +6,19 @@ Declarative config file migrations for TOML.
 
 ### config
 
-:::module config
-:::
+:-: ref path="config"
 
 ### engine
 
-:::module engine
-:::
+:-: ref path="engine"
 
 ### ops
 
-:::module ops
-:::
+:-: ref path="ops"
 
 ## Op Types
 
-:::schema ops/types.go Op
-:::
+:-: table-schema path="ops/types.go" target="Op"
 
 ## CLI
 
