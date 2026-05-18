@@ -1,0 +1,1 @@
+{"commits":["2ee8f647caf0db2b83ef384c4fd19b53c54f56e5"],"user_facing":true,"description":"**Breaking.** CLI migrated from Cobra to go-strictcli. `man` command deprecated (use `--help` instead). No other user-facing command changes.","type":"breaking"}
