@@ -1,6 +1,10 @@
+---
+description: "migrable provides declarative, comment-preserving TOML config file migrations with 14 operations, rollback support, and an embeddable Go library for shipping migrations inside your binary."
+---
+
 # migrable
 
-Declarative config file migrations for TOML.
+migrable provides declarative, comment-preserving TOML config file migrations with 14 operations, rollback support, and an embeddable Go library for shipping migrations inside your binary.
 
 ## API Reference
 
