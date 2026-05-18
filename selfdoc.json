@@ -1,4 +1,5 @@
 {
+  "base_url": "https://migrable.smmh.dev",
   "language": "go",
   "source": ["config", "engine", "ops"],
   "docs": "docs/",
