@@ -2,61 +2,56 @@ package cli
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/smm-h/migrable/config"
 	"github.com/smm-h/migrable/engine"
-	"github.com/spf13/cobra"
 )
 
-var validateCmd = &cobra.Command{
-	Use:   "validate",
-	Short: "Validate migration files",
-	RunE:  runValidate,
-}
+func runValidate(kwargs map[string]interface{}) int {
+	configDir := kwargs["config_dir"].(string)
+	quiet := kwargs["quiet"].(bool)
+	verbose := kwargs["verbose"].(bool)
 
-func init() {
-	rootCmd.AddCommand(validateCmd)
-}
-
-func runValidate(cmd *cobra.Command, args []string) error {
-	cfg, err := config.Load(ConfigDir)
+	cfg, err := config.Load(configDir)
 	if err != nil {
-		return NewExitError(ExitGeneralError, "%v", err)
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		return ExitGeneralError
 	}
 
 	migrationsDir := filepath.Join(cfg.BaseDir, cfg.MigrationsDir)
 	result, err := engine.Validate(migrationsDir)
 	if err != nil {
-		return NewExitError(ExitGeneralError, "%v", err)
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		return ExitGeneralError
 	}
 
-	if Quiet {
+	if quiet {
 		if len(result.Errors) > 0 {
-			return NewExitError(ExitValidationError, "")
+			return ExitValidationError
 		}
-		return nil
+		return ExitSuccess
 	}
 
-	w := cmd.OutOrStdout()
-
-	if Verbose {
+	if verbose {
 		for _, e := range result.Errors {
-			fmt.Fprintf(w, "ERROR: %s: %s\n", e.File, e.Message)
+			fmt.Printf("ERROR: %s: %s\n", e.File, e.Message)
 		}
 		for _, warn := range result.Warnings {
-			fmt.Fprintf(w, "WARN:  %s: %s\n", warn.File, warn.Message)
+			fmt.Printf("WARN:  %s: %s\n", warn.File, warn.Message)
 		}
 		if len(result.Errors) > 0 || len(result.Warnings) > 0 {
-			fmt.Fprintln(w)
+			fmt.Println()
 		}
 	}
 
-	fmt.Fprintf(w, "Validated %d migration(s). %d error(s), %d warning(s).\n",
+	fmt.Printf("Validated %d migration(s). %d error(s), %d warning(s).\n",
 		result.FileCount, len(result.Errors), len(result.Warnings))
 
 	if len(result.Errors) > 0 {
-		return NewExitError(ExitValidationError, "validation failed with %d error(s)", len(result.Errors))
+		fmt.Fprintf(os.Stderr, "validation failed with %d error(s)\n", len(result.Errors))
+		return ExitValidationError
 	}
-	return nil
+	return ExitSuccess
 }

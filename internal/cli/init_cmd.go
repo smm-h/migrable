@@ -2,35 +2,29 @@ package cli
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/smm-h/migrable/engine"
-	"github.com/spf13/cobra"
 )
 
-var initCmd = &cobra.Command{
-	Use:   "init",
-	Short: "Scaffold migrable.toml and migrations directory",
-	RunE:  runInit,
-}
+func runInit(kwargs map[string]interface{}) int {
+	configDir := kwargs["config_dir"].(string)
+	quiet := kwargs["quiet"].(bool)
 
-func init() {
-	rootCmd.AddCommand(initCmd)
-}
-
-func runInit(cmd *cobra.Command, args []string) error {
 	dir := "."
-	if ConfigDir != "" {
-		dir = ConfigDir
+	if configDir != "" {
+		dir = configDir
 	}
 
 	if err := engine.Init(dir); err != nil {
-		return NewExitError(ExitGeneralError, "%v", err)
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		return ExitGeneralError
 	}
 
-	if Quiet {
-		return nil
+	if quiet {
+		return ExitSuccess
 	}
 
-	fmt.Fprintln(cmd.OutOrStdout(), "Initialized migrable project. Edit migrable.toml to configure target files.")
-	return nil
+	fmt.Println("Initialized migrable project. Edit migrable.toml to configure target files.")
+	return ExitSuccess
 }

@@ -3,142 +3,128 @@ package cli
 import (
 	"errors"
 	"fmt"
+	"os"
 
 	tomledit "github.com/smm-h/go-toml-edit"
 	"github.com/smm-h/migrable/config"
 	"github.com/smm-h/migrable/engine"
-	"github.com/spf13/cobra"
 )
 
-var (
-	dryRun   bool
-	rollback bool
-)
+func runMigrate(kwargs map[string]interface{}) int {
+	configDir := kwargs["config_dir"].(string)
+	quiet := kwargs["quiet"].(bool)
+	verbose := kwargs["verbose"].(bool)
+	dryRun := kwargs["dry_run"].(bool)
+	rollback := kwargs["rollback"].(bool)
 
-var migrateCmd = &cobra.Command{
-	Use:   "migrate",
-	Short: "Run pending migrations",
-	RunE:  runMigrate,
-}
-
-func init() {
-	migrateCmd.Flags().BoolVar(&dryRun, "dry-run", false, "preview changes without writing")
-	migrateCmd.Flags().BoolVar(&rollback, "rollback", false, "roll back the most recently applied migration")
-	rootCmd.AddCommand(migrateCmd)
-}
-
-func runMigrate(cmd *cobra.Command, args []string) error {
-	cfg, err := config.Load(ConfigDir)
+	cfg, err := config.Load(configDir)
 	if err != nil {
-		return NewExitError(ExitGeneralError, "%v", err)
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		return ExitGeneralError
 	}
 
 	if rollback {
-		return runRollback(cmd, cfg)
+		return doRollback(cfg, quiet, verbose, dryRun)
 	}
 
 	result, err := engine.Migrate(cfg, dryRun)
 	if err != nil {
-		return NewExitError(ExitMigrationError, "%v", err)
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		return ExitMigrationError
 	}
 
-	if Quiet {
-		return nil
+	if quiet {
+		return ExitSuccess
 	}
-
-	w := cmd.OutOrStdout()
 
 	if result.Applied == 0 {
-		fmt.Fprintf(w, "Already up to date (version %s)\n", result.FromVersion)
-		return nil
+		fmt.Printf("Already up to date (version %s)\n", result.FromVersion)
+		return ExitSuccess
 	}
 
 	if dryRun {
-		fmt.Fprintf(w, "Dry run: %d migration(s) would be applied (%s -> %s)\n",
+		fmt.Printf("Dry run: %d migration(s) would be applied (%s -> %s)\n",
 			result.Applied, result.FromVersion, result.ToVersion)
-		printDryRunChanges(cmd, result)
-		return nil
+		printDryRunChanges(result)
+		return ExitSuccess
 	}
 
-	fmt.Fprintf(w, "Applied %d migration(s). Version: %s -> %s\n",
+	fmt.Printf("Applied %d migration(s). Version: %s -> %s\n",
 		result.Applied, result.FromVersion, result.ToVersion)
 
-	if Verbose {
-		printVerboseMigrations(cmd, result)
+	if verbose {
+		printVerboseMigrations(result)
 	}
 
-	return nil
+	return ExitSuccess
 }
 
-func runRollback(cmd *cobra.Command, cfg *config.Config) error {
+func doRollback(cfg *config.Config, quiet, verbose, dryRun bool) int {
 	result, err := engine.Rollback(cfg, dryRun)
 	if err != nil {
 		var blocked *engine.RollbackBlockedError
 		if errors.As(err, &blocked) {
-			return NewExitError(ExitRollbackBlocked, "%v", err)
+			fmt.Fprintf(os.Stderr, "%v\n", err)
+			return ExitRollbackBlocked
 		}
-		return NewExitError(ExitMigrationError, "%v", err)
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		return ExitMigrationError
 	}
 
-	if Quiet {
-		return nil
+	if quiet {
+		return ExitSuccess
 	}
-
-	w := cmd.OutOrStdout()
 
 	if dryRun {
-		fmt.Fprintf(w, "Dry run: would roll back migration %s. Version: %s -> %s\n",
+		fmt.Printf("Dry run: would roll back migration %s. Version: %s -> %s\n",
 			result.FromVersion, result.FromVersion, result.ToVersion)
-		printDryRunChanges(cmd, result)
-		return nil
+		printDryRunChanges(result)
+		return ExitSuccess
 	}
 
-	fmt.Fprintf(w, "Rolled back migration %s. Version: %s -> %s\n",
+	fmt.Printf("Rolled back migration %s. Version: %s -> %s\n",
 		result.FromVersion, result.FromVersion, result.ToVersion)
 
-	if Verbose {
+	if verbose {
 		for ver, desc := range result.Descriptions {
 			if desc != "" {
-				fmt.Fprintf(w, "  %s: %s\n", ver, desc)
+				fmt.Printf("  %s: %s\n", ver, desc)
 			}
 		}
 	}
 
-	return nil
+	return ExitSuccess
 }
 
-func printDryRunChanges(cmd *cobra.Command, result *engine.MigrateResult) {
-	w := cmd.OutOrStdout()
+func printDryRunChanges(result *engine.MigrateResult) {
 	for fileKey, changes := range result.FileChanges {
 		if len(changes) == 0 {
 			continue
 		}
-		fmt.Fprintf(w, "\nFile: %s\n", fileKey)
+		fmt.Printf("\nFile: %s\n", fileKey)
 		for _, c := range changes {
-			printChange(cmd, c)
+			printChange(c)
 		}
 	}
 }
 
-func printChange(cmd *cobra.Command, c tomledit.Change) {
-	w := cmd.OutOrStdout()
+func printChange(c tomledit.Change) {
 	switch c.Kind {
 	case tomledit.Added:
-		fmt.Fprintf(w, "  + %s = %s\n", c.Path, formatValue(c.NewValue))
+		fmt.Printf("  + %s = %s\n", c.Path, formatValue(c.NewValue))
 	case tomledit.Removed:
-		fmt.Fprintf(w, "  - %s = %s\n", c.Path, formatValue(c.OldValue))
+		fmt.Printf("  - %s = %s\n", c.Path, formatValue(c.OldValue))
 	case tomledit.Modified:
-		fmt.Fprintf(w, "  ~ %s: %s -> %s\n", c.Path, formatValue(c.OldValue), formatValue(c.NewValue))
+		fmt.Printf("  ~ %s: %s -> %s\n", c.Path, formatValue(c.OldValue), formatValue(c.NewValue))
 	}
 }
 
-func printVerboseMigrations(cmd *cobra.Command, result *engine.MigrateResult) {
-	w := cmd.OutOrStdout()
+func printVerboseMigrations(result *engine.MigrateResult) {
 	for ver, desc := range result.Descriptions {
 		if desc != "" {
-			fmt.Fprintf(w, "  %s: %s\n", ver, desc)
+			fmt.Printf("  %s: %s\n", ver, desc)
 		} else {
-			fmt.Fprintf(w, "  %s\n", ver)
+			fmt.Printf("  %s\n", ver)
 		}
 	}
 }

@@ -1,22 +1,9 @@
 package main
 
 import (
-	"errors"
-	"fmt"
-	"os"
-
 	"github.com/smm-h/migrable/internal/cli"
 )
 
 func main() {
-	cli.SetVersion(Version)
-	if err := cli.Execute(); err != nil {
-		var exitErr *cli.ExitError
-		if errors.As(err, &exitErr) {
-			fmt.Fprintln(os.Stderr, exitErr.Message)
-			os.Exit(exitErr.Code)
-		}
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
+	cli.NewApp(Version).Run()
 }

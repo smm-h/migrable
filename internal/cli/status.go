@@ -2,33 +2,29 @@ package cli
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/smm-h/migrable/config"
 	"github.com/smm-h/migrable/engine"
-	"github.com/spf13/cobra"
 )
 
-var statusCmd = &cobra.Command{
-	Use:   "status",
-	Short: "Show current version and pending migrations",
-	RunE:  runStatus,
-}
+func runStatus(kwargs map[string]interface{}) int {
+	configDir := kwargs["config_dir"].(string)
+	quiet := kwargs["quiet"].(bool)
+	verbose := kwargs["verbose"].(bool)
 
-func init() {
-	rootCmd.AddCommand(statusCmd)
-}
-
-func runStatus(cmd *cobra.Command, args []string) error {
-	cfg, err := config.Load(ConfigDir)
+	cfg, err := config.Load(configDir)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		return ExitGeneralError
 	}
 
 	migrationsDir := filepath.Join(cfg.BaseDir, cfg.MigrationsDir)
 	migrations, err := engine.DiscoverMigrations(migrationsDir)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		return ExitGeneralError
 	}
 
 	versionFile := ""
@@ -47,7 +43,8 @@ func runStatus(cmd *cobra.Command, args []string) error {
 
 	currentVersion, err := engine.ReadSchemaVersion(versionFilePath)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		return ExitGeneralError
 	}
 
 	var pending []engine.MigrationMeta
@@ -57,43 +54,43 @@ func runStatus(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	if Quiet {
+	if quiet {
 		if len(pending) > 0 {
-			return NewExitError(ExitGeneralError, "")
+			return ExitGeneralError
 		}
-		return nil
+		return ExitSuccess
 	}
 
-	fmt.Fprintf(cmd.OutOrStdout(), "Current version: %s\n", currentVersion)
-	fmt.Fprintf(cmd.OutOrStdout(), "Pending migrations: %d\n", len(pending))
+	fmt.Printf("Current version: %s\n", currentVersion)
+	fmt.Printf("Pending migrations: %d\n", len(pending))
 
 	if len(pending) > 0 {
-		fmt.Fprintln(cmd.OutOrStdout(), "")
+		fmt.Println()
 		for _, m := range pending {
-			fmt.Fprintf(cmd.OutOrStdout(), "  - %s\n", m.Version)
+			fmt.Printf("  - %s\n", m.Version)
 		}
 	}
 
-	if Verbose {
-		fmt.Fprintln(cmd.OutOrStdout(), "")
-		fmt.Fprintf(cmd.OutOrStdout(), "All migrations (%d):\n", len(migrations))
+	if verbose {
+		fmt.Println()
+		fmt.Printf("All migrations (%d):\n", len(migrations))
 		for _, m := range migrations {
 			marker := " "
 			if m.Version.GreaterThan(currentVersion) {
 				marker = "*"
 			}
-			fmt.Fprintf(cmd.OutOrStdout(), "  %s %s\n", marker, m.Version)
+			fmt.Printf("  %s %s\n", marker, m.Version)
 		}
 
-		fmt.Fprintln(cmd.OutOrStdout(), "")
-		fmt.Fprintln(cmd.OutOrStdout(), "Files:")
+		fmt.Println()
+		fmt.Println("Files:")
 		for key, path := range cfg.Files {
-			fmt.Fprintf(cmd.OutOrStdout(), "  %s = %s\n", key, path)
+			fmt.Printf("  %s = %s\n", key, path)
 		}
 
-		fmt.Fprintf(cmd.OutOrStdout(), "\nVersion file: %s\n", versionFile)
-		fmt.Fprintf(cmd.OutOrStdout(), "Migrations dir: %s\n", migrationsDir)
+		fmt.Printf("\nVersion file: %s\n", versionFile)
+		fmt.Printf("Migrations dir: %s\n", migrationsDir)
 	}
 
-	return nil
+	return ExitSuccess
 }
