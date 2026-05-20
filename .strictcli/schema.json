@@ -1,0 +1,118 @@
+{
+  "commands": {
+    "init": {
+      "args": [],
+      "flags": [],
+      "help": "Scaffold migrable.toml and migrations directory",
+      "name": "init",
+      "passthrough": false
+    },
+    "merge": {
+      "args": [
+        {
+          "help": "target semver version for the migration",
+          "name": "version",
+          "required": true,
+          "variadic": false
+        }
+      ],
+      "flags": [],
+      "help": "Combine next/ staging files into a versioned migration",
+      "name": "merge",
+      "passthrough": false
+    },
+    "migrate": {
+      "args": [],
+      "flags": [
+        {
+          "choices": null,
+          "default": false,
+          "env": null,
+          "help": "preview changes without writing",
+          "hidden": false,
+          "name": "dry-run",
+          "negatable": true,
+          "repeatable": false,
+          "short": null,
+          "type": "bool"
+        },
+        {
+          "choices": null,
+          "default": false,
+          "env": null,
+          "help": "roll back the most recently applied migration",
+          "hidden": false,
+          "name": "rollback",
+          "negatable": true,
+          "repeatable": false,
+          "short": null,
+          "type": "bool"
+        }
+      ],
+      "help": "Run pending migrations",
+      "name": "migrate",
+      "passthrough": false
+    },
+    "status": {
+      "args": [],
+      "flags": [],
+      "help": "Show current version and pending migrations",
+      "name": "status",
+      "passthrough": false
+    },
+    "validate": {
+      "args": [],
+      "flags": [],
+      "help": "Validate migration files",
+      "name": "validate",
+      "passthrough": false
+    }
+  },
+  "config": false,
+  "deprecated": {
+    "man": "Use 'migrable --help' for command documentation."
+  },
+  "env_prefix": null,
+  "global_flags": [
+    {
+      "choices": null,
+      "default": "",
+      "env": null,
+      "help": "path to configuration directory",
+      "hidden": false,
+      "name": "config-dir",
+      "negatable": null,
+      "repeatable": false,
+      "short": null,
+      "type": "str"
+    },
+    {
+      "choices": null,
+      "default": false,
+      "env": null,
+      "help": "suppress non-error output",
+      "hidden": false,
+      "name": "quiet",
+      "negatable": true,
+      "repeatable": false,
+      "short": null,
+      "type": "bool"
+    },
+    {
+      "choices": null,
+      "default": false,
+      "env": null,
+      "help": "enable verbose output",
+      "hidden": false,
+      "name": "verbose",
+      "negatable": true,
+      "repeatable": false,
+      "short": null,
+      "type": "bool"
+    }
+  ],
+  "groups": {},
+  "help": "Declarative config file migrations for TOML",
+  "name": "migrable",
+  "version": ""
+}
