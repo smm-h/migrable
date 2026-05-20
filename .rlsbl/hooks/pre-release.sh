@@ -7,6 +7,9 @@ set -euo pipefail
 
 echo "Running pre-release checks..."
 
+echo "  Updating CLI schema..."
+go run . --dump-schema
+
 if [ -f go.mod ]; then
   echo "  Go: vet + build + test"
   go vet ./...
