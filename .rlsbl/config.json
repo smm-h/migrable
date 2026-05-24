@@ -9,5 +9,6 @@
       "name": "pypi",
       "path": "pypi/"
     }
-  ]
+  ],
+  "private": false
 }
