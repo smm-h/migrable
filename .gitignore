@@ -36,3 +36,9 @@ docs/_build/
 coverage/
 *.egg-info/
 .wrangler/
+
+node_modules/
+__pycache__/
+*.pyc
+*.log
+dist/

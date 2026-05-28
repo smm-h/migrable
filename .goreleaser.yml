@@ -24,4 +24,12 @@ archives:
       - docs/man/*.1
 
 checksum:
+<<<<<<< /home/m/Projects/migrable/tmpyjaf1ldx.ours
   name_template: "checksums.txt"
+=======
+  name_template: checksums.txt
+
+changelog:
+  use: github-native
+
+>>>>>>> /home/m/Projects/migrable/tmpzymwq4o7.theirs

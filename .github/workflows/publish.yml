@@ -3,6 +3,8 @@ name: Publish
 on:
   release:
     types: [published]
+  workflow_dispatch:
+
 
 permissions:
   contents: write
@@ -31,11 +33,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+
+
   npm:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: npm/
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -48,13 +49,8 @@ jobs:
 
   pypi:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: pypi/
     steps:
       - uses: actions/checkout@v6
       - uses: astral-sh/setup-uv@v7
       - run: uv build
       - uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          packages-dir: pypi/dist/
