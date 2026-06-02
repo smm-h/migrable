@@ -1,8 +1,7 @@
 {
   "version": "0.6.0",
   "base_url": "https://migrable.smmh.dev",
-  "language": "go",
-  "source": ["config", "engine", "ops"],
+  "source": [{"path": "config", "language": "go"}, {"path": "engine", "language": "go"}, {"path": "ops", "language": "go"}],
   "docs": "docs/",
   "output": "docs/_build/",
   "versions": [{"version": "0.6.0", "indexed": true}],
