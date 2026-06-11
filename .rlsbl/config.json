@@ -17,11 +17,20 @@
       "type": "go",
       "local": false,
       "custom_assets": [
-        {"name": "conformance-tests.tar.gz", "build": "tar czf $RLSBL_DIST_DIR/conformance-tests.tar.gz -C conformance --exclude=*_test.go ."}
+        {
+          "name": "conformance-tests.tar.gz",
+          "build": "tar czf $RLSBL_DIST_DIR/conformance-tests.tar.gz -C conformance --exclude=*_test.go ."
+        }
       ],
       "max_asset_size_mb": 10
     },
-    "npm": {"type": "npm", "local": false},
-    "pypi": {"type": "pypi", "local": false}
+    "npm": {
+      "type": "npm",
+      "local": false
+    },
+    "pypi": {
+      "type": "pypi",
+      "local": false
+    }
   }
 }

@@ -6,12 +6,13 @@
   ".rlsbl/hooks/pre-release.sh": "94044c85f8bf1babfe6b0f2d378b04852936e5024f9092bbfcc8ef76f3af4bb9",
   ".rlsbl/hooks/post-release.sh": "b455f8511e0b2655509ecf5dcb0ab7da5bb7c961f47910ff8e00cab5bd51f833",
   ".claude/settings.json": "78922a784ee78e9e50587e93628cd3b9d4dfbe49087adc4514e6781cea38cbb9",
-  ".github/workflows/publish.yml": "a2872b15888da9cb430ac222525f547187fed67410d8727f178335d3c040d88a",
+  ".github/workflows/publish.yml": "dd0fe62c25316995dde9f6568cb805286ee3f5bf64f2f210bb9137436ccf6c7d",
   "version.go": "66f79bab8610a681f17894668192f0c646b2c8c046092e857179265693a71cc3",
   ".gitignore": "3470d84521a317e4ab360e7ecd8320c47470483995196183e7f13ce272265a52",
   ".goreleaser.yml": "c167b3b62e90e24d68bd0fa1157b2215164ad37cb77624d4f27100a0f2e5eecd",
   ".rlsbl/hooks/pre-checks.sh": "60c57d4563263124530e6f33aca77550ea2161ad3b33b3ba6ad1c03fea9eb6e2",
   ".rlsbl/lint/python.toml": "9cfbcef2e010d5fad243437bf2fd8df54a1fae70ee0762f9d11da70fe207501c",
   ".rlsbl/lint/go.toml": "807d5cf760baad6d571a5bfd43cb163efe356f7462ba9f1918d72de45f62339f",
-  ".rlsbl/lint/npm.toml": "baa36014e65923d8cc5c8b83c77fa651da79351627570476402da66840027645"
+  ".rlsbl/lint/npm.toml": "baa36014e65923d8cc5c8b83c77fa651da79351627570476402da66840027645",
+  ".npmignore": "7c0eea9785c0318aeb39bf8b670ce8384f4a5b812fde69ce23d7d018057325a3"
 }
