@@ -9,15 +9,15 @@ func NewApp(version string) *strictcli.App {
 	app := strictcli.NewApp("migrable", version, "Declarative config file migrations for TOML")
 
 	app.GlobalFlag(strictcli.StringFlag("config-dir", "path to configuration directory", strictcli.Default("")))
-	app.GlobalFlag(strictcli.BoolFlag("quiet", "suppress non-error output"))
-	app.GlobalFlag(strictcli.BoolFlag("verbose", "enable verbose output"))
+	app.GlobalFlag(strictcli.BoolFlag("quiet", "suppress non-error output", strictcli.Default(false)))
+	app.GlobalFlag(strictcli.BoolFlag("verbose", "enable verbose output", strictcli.Default(false)))
 
 	app.Command("init", "Scaffold migrable.toml and migrations directory", runInit)
 
 	app.Command("migrate", "Run pending migrations", runMigrate,
 		strictcli.WithFlags(
-			strictcli.BoolFlag("dry-run", "preview changes without writing"),
-			strictcli.BoolFlag("rollback", "roll back the most recently applied migration"),
+			strictcli.BoolFlag("dry-run", "preview changes without writing", strictcli.Default(false)),
+			strictcli.BoolFlag("rollback", "roll back the most recently applied migration", strictcli.Default(false)),
 		),
 	)
 
