@@ -10,3 +10,4 @@
 {"commits":["54cd6528e3605ad8e01f8c7c91ee1fee3afb534e"],"user_facing":false}
 {"commits":["c0e7d622973a583140c420eec8096a6a79acb359"],"user_facing":true,"description":"**Breaking.** Upgrade go-strictcli to v0.17.0: all BoolFlags now have explicit defaults.","type":"breaking"}
 {"commits":["02f46aacdd90b31ca65fa07fb80c14bd41aabe06","400d453cc1530682b8371e78aa2f4305cec099a1","61e7b3b8b75f2b8287ff7f15c12f557b3865a45c","62ef6860a8d4e1ae350f23af87ea97ceb5bfafdc","637a790b9e565954b830620111036fb6452ac601"],"user_facing":false}
+{"commits":["8c63d533c7f0fa9129a1df599977a6b88b12d212","9e702ca5b320fe7ee1552bda5a248200fea69358","a9fa21829c310a7c3240ff11ba472057a4c2ea42","be7da3216d4619615483240b239705097ded075a"],"user_facing":false}
