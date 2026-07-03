@@ -16,7 +16,9 @@
     "go": {
       "type": "go",
       "local": false,
-      "install_paths": ["."],
+      "install_paths": [
+        "."
+      ],
       "custom_assets": [
         {
           "name": "conformance-tests.tar.gz",
