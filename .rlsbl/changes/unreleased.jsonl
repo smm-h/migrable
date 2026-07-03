@@ -7,3 +7,4 @@
 {"commits":["f849a95267d68371c0b0d6431c37057f20e7c2df"],"user_facing":false}
 {"commits":["e115beb443c82f96ab73f4772cbae76ca395aba4"],"user_facing":false}
 {"commits":["9981ee793cfb346f0a5cbc5e6f7561682a5689d2"],"user_facing":true,"description":"**Fix.** `rlsbl dev install` works again: the go pipeline now declares `install_paths` (the root main package), which newer rlsbl requires for `go install`.","type":"fix"}
+{"commits":["54cd6528e3605ad8e01f8c7c91ee1fee3afb534e"],"user_facing":false}
