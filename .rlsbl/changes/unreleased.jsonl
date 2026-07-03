@@ -8,3 +8,4 @@
 {"commits":["e115beb443c82f96ab73f4772cbae76ca395aba4"],"user_facing":false}
 {"commits":["9981ee793cfb346f0a5cbc5e6f7561682a5689d2"],"user_facing":true,"description":"**Fix.** `rlsbl dev install` works again: the go pipeline now declares `install_paths` (the root main package), which newer rlsbl requires for `go install`.","type":"fix"}
 {"commits":["54cd6528e3605ad8e01f8c7c91ee1fee3afb534e"],"user_facing":false}
+{"commits":["c0e7d622973a583140c420eec8096a6a79acb359"],"user_facing":true,"description":"**Breaking.** Upgrade go-strictcli to v0.17.0: all BoolFlags now have explicit defaults.","type":"breaking"}
