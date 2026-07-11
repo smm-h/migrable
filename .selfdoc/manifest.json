@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "name": "migrable",
+  "slug": "migrable",
+  "version": "0.6.0",
+  "description": "",
+  "language": "go",
+  "base_url": "https://migrable.smmh.dev",
+  "pages": [
+    {
+      "path": "cli-index.md",
+      "title": "migrable CLI Reference",
+      "type": "doc"
+    },
+    {
+      "path": "cli-init.md",
+      "title": "migrable init",
+      "type": "doc"
+    },
+    {
+      "path": "cli-merge.md",
+      "title": "migrable merge",
+      "type": "doc"
+    },
+    {
+      "path": "cli-migrate.md",
+      "title": "migrable migrate",
+      "type": "doc"
+    },
+    {
+      "path": "cli-status.md",
+      "title": "migrable status",
+      "type": "doc"
+    },
+    {
+      "path": "cli-validate.md",
+      "title": "migrable validate",
+      "type": "doc"
+    },
+    {
+      "path": "config.md",
+      "title": "config",
+      "type": "doc"
+    },
+    {
+      "path": "engine.md",
+      "title": "engine",
+      "type": "doc"
+    },
+    {
+      "path": "gen-index.md",
+      "title": "API Reference",
+      "type": "doc"
+    },
+    {
+      "path": "index.md",
+      "title": "migrable",
+      "type": "doc"
+    },
+    {
+      "path": "ops.md",
+      "title": "ops",
+      "type": "doc"
+    }
+  ],
+  "posts": [],
+  "last_gen": "2026-07-11T12:54:16.894238+00:00"
+}
