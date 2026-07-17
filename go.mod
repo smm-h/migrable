@@ -5,8 +5,8 @@ go 1.25.7
 require (
 	github.com/Masterminds/semver/v3 v3.5.0
 	github.com/google/cel-go v0.28.0
-	github.com/smm-h/go-toml-edit v0.2.1
-	github.com/smm-h/strictcli/go v0.17.0
+	github.com/smm-h/go-toml-edit v0.2.2
+	github.com/smm-h/strictcli/go v0.23.0
 	google.golang.org/protobuf v1.36.10
 )
 

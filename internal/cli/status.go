@@ -7,9 +7,10 @@ import (
 
 	"github.com/smm-h/migrable/config"
 	"github.com/smm-h/migrable/engine"
+	"github.com/smm-h/strictcli/go/strictcli"
 )
 
-func runStatus(kwargs map[string]interface{}) int {
+func runStatus(ctx *strictcli.Context, kwargs map[string]interface{}) strictcli.Outcome {
 	configDir := kwargs["config_dir"].(string)
 	quiet := kwargs["quiet"].(bool)
 	verbose := kwargs["verbose"].(bool)
@@ -17,14 +18,14 @@ func runStatus(kwargs map[string]interface{}) int {
 	cfg, err := config.Load(configDir)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
-		return ExitGeneralError
+		return strictcli.Exit(ExitGeneralError)
 	}
 
 	migrationsDir := filepath.Join(cfg.BaseDir, cfg.MigrationsDir)
 	migrations, err := engine.DiscoverMigrations(migrationsDir)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
-		return ExitGeneralError
+		return strictcli.Exit(ExitGeneralError)
 	}
 
 	versionFile := ""
@@ -44,7 +45,7 @@ func runStatus(kwargs map[string]interface{}) int {
 	currentVersion, err := engine.ReadSchemaVersion(versionFilePath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
-		return ExitGeneralError
+		return strictcli.Exit(ExitGeneralError)
 	}
 
 	var pending []engine.MigrationMeta
@@ -56,9 +57,9 @@ func runStatus(kwargs map[string]interface{}) int {
 
 	if quiet {
 		if len(pending) > 0 {
-			return ExitGeneralError
+			return strictcli.Exit(ExitGeneralError)
 		}
-		return ExitSuccess
+		return strictcli.Exit(ExitSuccess)
 	}
 
 	fmt.Printf("Current version: %s\n", currentVersion)
@@ -92,5 +93,5 @@ func runStatus(kwargs map[string]interface{}) int {
 		fmt.Printf("Migrations dir: %s\n", migrationsDir)
 	}
 
-	return ExitSuccess
+	return strictcli.Exit(ExitSuccess)
 }

@@ -7,9 +7,10 @@ import (
 
 	"github.com/smm-h/migrable/config"
 	"github.com/smm-h/migrable/engine"
+	"github.com/smm-h/strictcli/go/strictcli"
 )
 
-func runValidate(kwargs map[string]interface{}) int {
+func runValidate(ctx *strictcli.Context, kwargs map[string]interface{}) strictcli.Outcome {
 	configDir := kwargs["config_dir"].(string)
 	quiet := kwargs["quiet"].(bool)
 	verbose := kwargs["verbose"].(bool)
@@ -17,21 +18,21 @@ func runValidate(kwargs map[string]interface{}) int {
 	cfg, err := config.Load(configDir)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
-		return ExitGeneralError
+		return strictcli.Exit(ExitGeneralError)
 	}
 
 	migrationsDir := filepath.Join(cfg.BaseDir, cfg.MigrationsDir)
 	result, err := engine.Validate(migrationsDir)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
-		return ExitGeneralError
+		return strictcli.Exit(ExitGeneralError)
 	}
 
 	if quiet {
 		if len(result.Errors) > 0 {
-			return ExitValidationError
+			return strictcli.Exit(ExitValidationError)
 		}
-		return ExitSuccess
+		return strictcli.Exit(ExitSuccess)
 	}
 
 	if verbose {
@@ -51,7 +52,7 @@ func runValidate(kwargs map[string]interface{}) int {
 
 	if len(result.Errors) > 0 {
 		fmt.Fprintf(os.Stderr, "validation failed with %d error(s)\n", len(result.Errors))
-		return ExitValidationError
+		return strictcli.Exit(ExitValidationError)
 	}
-	return ExitSuccess
+	return strictcli.Exit(ExitSuccess)
 }

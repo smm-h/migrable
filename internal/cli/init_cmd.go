@@ -5,9 +5,10 @@ import (
 	"os"
 
 	"github.com/smm-h/migrable/engine"
+	"github.com/smm-h/strictcli/go/strictcli"
 )
 
-func runInit(kwargs map[string]interface{}) int {
+func runInit(ctx *strictcli.Context, kwargs map[string]interface{}) strictcli.Outcome {
 	configDir := kwargs["config_dir"].(string)
 	quiet := kwargs["quiet"].(bool)
 
@@ -18,13 +19,13 @@ func runInit(kwargs map[string]interface{}) int {
 
 	if err := engine.Init(dir); err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
-		return ExitGeneralError
+		return strictcli.Exit(ExitGeneralError)
 	}
 
 	if quiet {
-		return ExitSuccess
+		return strictcli.Exit(ExitSuccess)
 	}
 
 	fmt.Println("Initialized migrable project. Edit migrable.toml to configure target files.")
-	return ExitSuccess
+	return strictcli.Exit(ExitSuccess)
 }

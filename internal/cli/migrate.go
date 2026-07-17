@@ -8,9 +8,10 @@ import (
 	tomledit "github.com/smm-h/go-toml-edit"
 	"github.com/smm-h/migrable/config"
 	"github.com/smm-h/migrable/engine"
+	"github.com/smm-h/strictcli/go/strictcli"
 )
 
-func runMigrate(kwargs map[string]interface{}) int {
+func runMigrate(ctx *strictcli.Context, kwargs map[string]interface{}) strictcli.Outcome {
 	configDir := kwargs["config_dir"].(string)
 	quiet := kwargs["quiet"].(bool)
 	verbose := kwargs["verbose"].(bool)
@@ -20,7 +21,7 @@ func runMigrate(kwargs map[string]interface{}) int {
 	cfg, err := config.Load(configDir)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
-		return ExitGeneralError
+		return strictcli.Exit(ExitGeneralError)
 	}
 
 	if rollback {
@@ -30,23 +31,23 @@ func runMigrate(kwargs map[string]interface{}) int {
 	result, err := engine.Migrate(cfg, dryRun)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
-		return ExitMigrationError
+		return strictcli.Exit(ExitMigrationError)
 	}
 
 	if quiet {
-		return ExitSuccess
+		return strictcli.Exit(ExitSuccess)
 	}
 
 	if result.Applied == 0 {
 		fmt.Printf("Already up to date (version %s)\n", result.FromVersion)
-		return ExitSuccess
+		return strictcli.Exit(ExitSuccess)
 	}
 
 	if dryRun {
 		fmt.Printf("Dry run: %d migration(s) would be applied (%s -> %s)\n",
 			result.Applied, result.FromVersion, result.ToVersion)
 		printDryRunChanges(result)
-		return ExitSuccess
+		return strictcli.Exit(ExitSuccess)
 	}
 
 	fmt.Printf("Applied %d migration(s). Version: %s -> %s\n",
@@ -56,30 +57,30 @@ func runMigrate(kwargs map[string]interface{}) int {
 		printVerboseMigrations(result)
 	}
 
-	return ExitSuccess
+	return strictcli.Exit(ExitSuccess)
 }
 
-func doRollback(cfg *config.Config, quiet, verbose, dryRun bool) int {
+func doRollback(cfg *config.Config, quiet, verbose, dryRun bool) strictcli.Outcome {
 	result, err := engine.Rollback(cfg, dryRun)
 	if err != nil {
 		var blocked *engine.RollbackBlockedError
 		if errors.As(err, &blocked) {
 			fmt.Fprintf(os.Stderr, "%v\n", err)
-			return ExitRollbackBlocked
+			return strictcli.Exit(ExitRollbackBlocked)
 		}
 		fmt.Fprintf(os.Stderr, "%v\n", err)
-		return ExitMigrationError
+		return strictcli.Exit(ExitMigrationError)
 	}
 
 	if quiet {
-		return ExitSuccess
+		return strictcli.Exit(ExitSuccess)
 	}
 
 	if dryRun {
 		fmt.Printf("Dry run: would roll back migration %s. Version: %s -> %s\n",
 			result.FromVersion, result.FromVersion, result.ToVersion)
 		printDryRunChanges(result)
-		return ExitSuccess
+		return strictcli.Exit(ExitSuccess)
 	}
 
 	fmt.Printf("Rolled back migration %s. Version: %s -> %s\n",
@@ -93,7 +94,7 @@ func doRollback(cfg *config.Config, quiet, verbose, dryRun bool) int {
 		}
 	}
 
-	return ExitSuccess
+	return strictcli.Exit(ExitSuccess)
 }
 
 func printDryRunChanges(result *engine.MigrateResult) {
