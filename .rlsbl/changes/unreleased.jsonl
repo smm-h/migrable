@@ -1,15 +1,15 @@
-{"commits":["200f93c8bd35b1786f7066f123d8c89e757e99a2","ae6c328f8eb3be9ce42e843fcc56829a9ba27470","c93336c1a7513fb67af6e09b9ef4e75bf781585b","0be64435972828b9a4a5af3b1a6a04709fe10da1"],"user_facing":false}
-{"commits":["9ac61780bd1066ec49504021078101d5c7131a53","e081b53a4441405e086570443da7239d68fe179b"],"user_facing":false}
-{"commits":["3cb4edd03718610dbdb6630e112d0aa6bfb2e8df"],"user_facing":false}
-{"commits":["acdc9186ce112a6181ddc86f3ed6e110b2be27ed","23eeba41bb725d2a3b150a5f0164540b981bf16a","dd4e93218c344f088d8cac62bc768e8f07ce6cfa","ded6bfdda189f22c4f561fd721ae21ca69bde072"],"user_facing":false}
-{"commits":["bf60ffff3a2a2cf4eb992ed219e848a386c66f42"],"user_facing":false}
-{"commits":["d7746cf69d35cd72b1355cafc09fbf50a4800784"],"user_facing":false}
-{"commits":["f849a95267d68371c0b0d6431c37057f20e7c2df"],"user_facing":false}
-{"commits":["e115beb443c82f96ab73f4772cbae76ca395aba4"],"user_facing":false}
-{"commits":["9981ee793cfb346f0a5cbc5e6f7561682a5689d2"],"user_facing":true,"description":"**Fix.** `rlsbl dev install` works again: the go pipeline now declares `install_paths` (the root main package), which newer rlsbl requires for `go install`.","type":"fix"}
-{"commits":["54cd6528e3605ad8e01f8c7c91ee1fee3afb534e"],"user_facing":false}
-{"commits":["c0e7d622973a583140c420eec8096a6a79acb359"],"user_facing":true,"description":"**Breaking.** Upgrade go-strictcli to v0.17.0: all BoolFlags now have explicit defaults.","type":"breaking"}
-{"commits":["02f46aacdd90b31ca65fa07fb80c14bd41aabe06","400d453cc1530682b8371e78aa2f4305cec099a1","61e7b3b8b75f2b8287ff7f15c12f557b3865a45c","62ef6860a8d4e1ae350f23af87ea97ceb5bfafdc","637a790b9e565954b830620111036fb6452ac601"],"user_facing":false}
-{"commits":["8c63d533c7f0fa9129a1df599977a6b88b12d212","9e702ca5b320fe7ee1552bda5a248200fea69358","a9fa21829c310a7c3240ff11ba472057a4c2ea42","be7da3216d4619615483240b239705097ded075a"],"user_facing":false}
-{"id":"18c03efb51e62c3fd3d27071f78a4e35b8050a228699c523","commits":["059e91f238007e2de91196723d14e634c1444c75"],"user_facing":false}
-{"id":"18c331e4361ff1ff816d0da09fc7472580c69d6eb6dc2778","commits":["e6ab38e568a47c88c1231eac186dcedc65aeaa2a"],"user_facing":false}
+{"format_version":1,"commits":["200f93c8bd35b1786f7066f123d8c89e757e99a2","ae6c328f8eb3be9ce42e843fcc56829a9ba27470","c93336c1a7513fb67af6e09b9ef4e75bf781585b","0be64435972828b9a4a5af3b1a6a04709fe10da1"],"user_facing":false}
+{"format_version":1,"commits":["9ac61780bd1066ec49504021078101d5c7131a53","e081b53a4441405e086570443da7239d68fe179b"],"user_facing":false}
+{"format_version":1,"commits":["3cb4edd03718610dbdb6630e112d0aa6bfb2e8df"],"user_facing":false}
+{"format_version":1,"commits":["acdc9186ce112a6181ddc86f3ed6e110b2be27ed","23eeba41bb725d2a3b150a5f0164540b981bf16a","dd4e93218c344f088d8cac62bc768e8f07ce6cfa","ded6bfdda189f22c4f561fd721ae21ca69bde072"],"user_facing":false}
+{"format_version":1,"commits":["bf60ffff3a2a2cf4eb992ed219e848a386c66f42"],"user_facing":false}
+{"format_version":1,"commits":["d7746cf69d35cd72b1355cafc09fbf50a4800784"],"user_facing":false}
+{"format_version":1,"commits":["f849a95267d68371c0b0d6431c37057f20e7c2df"],"user_facing":false}
+{"format_version":1,"commits":["e115beb443c82f96ab73f4772cbae76ca395aba4"],"user_facing":false}
+{"format_version":1,"commits":["9981ee793cfb346f0a5cbc5e6f7561682a5689d2"],"user_facing":true,"description":"**Fix.** `rlsbl dev install` works again: the go pipeline now declares `install_paths` (the root main package), which newer rlsbl requires for `go install`.","type":"fix"}
+{"format_version":1,"commits":["54cd6528e3605ad8e01f8c7c91ee1fee3afb534e"],"user_facing":false}
+{"format_version":1,"commits":["c0e7d622973a583140c420eec8096a6a79acb359"],"user_facing":true,"description":"**Breaking.** Upgrade go-strictcli to v0.17.0: all BoolFlags now have explicit defaults.","type":"breaking"}
+{"format_version":1,"commits":["02f46aacdd90b31ca65fa07fb80c14bd41aabe06","400d453cc1530682b8371e78aa2f4305cec099a1","61e7b3b8b75f2b8287ff7f15c12f557b3865a45c","62ef6860a8d4e1ae350f23af87ea97ceb5bfafdc","637a790b9e565954b830620111036fb6452ac601"],"user_facing":false}
+{"format_version":1,"commits":["8c63d533c7f0fa9129a1df599977a6b88b12d212","9e702ca5b320fe7ee1552bda5a248200fea69358","a9fa21829c310a7c3240ff11ba472057a4c2ea42","be7da3216d4619615483240b239705097ded075a"],"user_facing":false}
+{"format_version":1,"id":"18c03efb51e62c3fd3d27071f78a4e35b8050a228699c523","commits":["059e91f238007e2de91196723d14e634c1444c75"],"user_facing":false}
+{"format_version":1,"id":"18c331e4361ff1ff816d0da09fc7472580c69d6eb6dc2778","commits":["e6ab38e568a47c88c1231eac186dcedc65aeaa2a"],"user_facing":false}
