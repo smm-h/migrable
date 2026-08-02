@@ -8,26 +8,31 @@
   "en/cli-init.md": {
     "content": "6467192dc5789eaf4d5f137d6fae666ce41e9c8751ac4faaaf14c105d65bcde4",
     "description": "8aee48e366d1afcda1a2d0396df89449d7f1695af1537ca032d78de08103b8bc",
+    "schema_hash": "b3d817fb690365c98a98de393e89dd2dda6e3c3dd48e2b48c1b698b2c5557042",
     "seed_hash": "8aee48e366d1afcda1a2d0396df89449d7f1695af1537ca032d78de08103b8bc"
   },
   "en/cli-merge.md": {
     "content": "25400fd2c30e69d719505ed765248a0e53d721b6036ed84f919479b64eed1ca9",
     "description": "eb3e17c2fc515013c95278d5d7cfaacaecad131bd24b44de2dc9f711a4ba821c",
+    "schema_hash": "445612cc01e23ddb7a3fd22749073371aea784967d85f88cdb49378d2cbcb551",
     "seed_hash": "eb3e17c2fc515013c95278d5d7cfaacaecad131bd24b44de2dc9f711a4ba821c"
   },
   "en/cli-migrate.md": {
     "content": "64e6a7c5e28b2819cf9fe365df5256e7ce47b4807d3933e42b7f4940b79a0bf7",
     "description": "bc1f03790e5790d63e32c688f5faa26adeb9475ac8a4fd34f36b03935e83df25",
+    "schema_hash": "a2beaf86b53bd25219eca2e1121a423ca378b1ec79cd377da40d35b1601e9939",
     "seed_hash": "bc1f03790e5790d63e32c688f5faa26adeb9475ac8a4fd34f36b03935e83df25"
   },
   "en/cli-status.md": {
     "content": "243054405b90f9fdd9a4b46b8a45e68cefc3c061c0def0596eebc0a07aeec5bb",
     "description": "51cb26348e67766459bc2c3b1d86b72e0e444c22cdc2690889b1c6359b232e98",
+    "schema_hash": "cd9d9ac69ce198f2c7daf3846b2267fc7a3e18bc30f4d43341c0e44514e6ae51",
     "seed_hash": "51cb26348e67766459bc2c3b1d86b72e0e444c22cdc2690889b1c6359b232e98"
   },
   "en/cli-validate.md": {
     "content": "96eb3757db3e5ca8f07621e6439020ca164e41b5483e7a11b4da09dbbcf5a480",
     "description": "d380f3272f17425cc4a19aa32a31563c48920ed614a7225f87915946787eaf6b",
+    "schema_hash": "04f230e5403c66d519f3a2c6ed347e2df2373feba10427a4957828ffd40370f2",
     "seed_hash": "d380f3272f17425cc4a19aa32a31563c48920ed614a7225f87915946787eaf6b"
   },
   "en/config.md": {
@@ -47,11 +52,13 @@
   },
   "en/index.md": {
     "content": "8094f3d25a8ca98bf340c58798d09f31e3d3951ac474ea9660f67eb6ab53d7e2",
-    "description": "c0014a29359a42c6255be5c06669a951fc4b1490c09a5fb08a7ee5be4fa4f6a4"
+    "description": "c0014a29359a42c6255be5c06669a951fc4b1490c09a5fb08a7ee5be4fa4f6a4",
+    "source_docstring": "6f755aaf12c23b8f1b14f267fa877f2201ee2e3898a4cb0ada1c9af52931c73b"
   },
   "en/ops.md": {
     "content": "729feabdf991efab0c5d0e6bf18a782eaffdac628c382b745e67ff87d8a36901",
     "description": "5dee46cd743b4689b117ed9c815bec1d3497ac6d9bb33322e29818d057b9fcc2",
-    "seed_hash": "5dee46cd743b4689b117ed9c815bec1d3497ac6d9bb33322e29818d057b9fcc2"
+    "seed_hash": "5dee46cd743b4689b117ed9c815bec1d3497ac6d9bb33322e29818d057b9fcc2",
+    "source_docstring": "5dee46cd743b4689b117ed9c815bec1d3497ac6d9bb33322e29818d057b9fcc2"
   }
 }
