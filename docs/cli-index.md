@@ -13,7 +13,7 @@ order: 91
 
 Declarative config file migrations for TOML
 
-Version: 0.6.1-0.20260529221630-9ac61780bd10+dirty
+Version: :-: var key="project.version"
 
 ## Commands
 

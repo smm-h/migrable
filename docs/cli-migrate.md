@@ -16,5 +16,4 @@ Run pending migrations
 
 | Name | Short | Type | Default | Env | Description |
 | --- | --- | --- | --- | --- | --- |
-| `--dry-run` |  | bool |  |  | preview changes without writing |
 | `--rollback` |  | bool |  |  | roll back the most recently applied migration |
