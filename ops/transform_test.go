@@ -1,11 +1,13 @@
 package ops
 
 import (
+	"github.com/smm-h/stricttest/go/hygiene"
 	"strings"
 	"testing"
 )
 
 func TestExecTransform(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("transform string value", func(t *testing.T) {
 		doc := mustParse(t, `name = "hello"`)
 		err := ExecTransform(doc, Op{Path: "name", Expr: `value + "-world"`})

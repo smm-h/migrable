@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"github.com/smm-h/stricttest/go/hygiene"
 	"os"
 	"path/filepath"
 	"strings"
@@ -8,6 +9,7 @@ import (
 )
 
 func TestWriteFilesAtomic(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("multiple files written correctly", func(t *testing.T) {
 		dir := t.TempDir()
 		path1 := filepath.Join(dir, "file1.toml")
@@ -82,6 +84,7 @@ func TestWriteFilesAtomic(t *testing.T) {
 }
 
 func TestWriteFileAtomic(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("writes file correctly", func(t *testing.T) {
 		dir := t.TempDir()
 		path := filepath.Join(dir, "output.toml")

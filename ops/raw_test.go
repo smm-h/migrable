@@ -1,11 +1,13 @@
 package ops
 
 import (
+	"github.com/smm-h/stricttest/go/hygiene"
 	"strings"
 	"testing"
 )
 
 func TestExecRaw(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("insert key-value pairs at root", func(t *testing.T) {
 		doc := mustParse(t, "existing = true\n")
 		err := ExecRaw(doc, Op{

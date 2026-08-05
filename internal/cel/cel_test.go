@@ -1,11 +1,13 @@
 package cel
 
 import (
+	"github.com/smm-h/stricttest/go/hygiene"
 	"testing"
 	"time"
 )
 
 func TestEvaluateStringOps(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("concatenation", func(t *testing.T) {
 		result, err := Evaluate(`value + "-suffix"`, "hello")
 		if err != nil {
@@ -38,6 +40,7 @@ func TestEvaluateStringOps(t *testing.T) {
 }
 
 func TestEvaluateStringExtensions(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("contains", func(t *testing.T) {
 		result, err := Evaluate(`value.contains("world")`, "hello world")
 		if err != nil {
@@ -98,6 +101,7 @@ func TestEvaluateStringExtensions(t *testing.T) {
 }
 
 func TestEvaluateIntegerOps(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("arithmetic", func(t *testing.T) {
 		result, err := Evaluate(`value * 2 + 1`, int64(10))
 		if err != nil {
@@ -120,6 +124,7 @@ func TestEvaluateIntegerOps(t *testing.T) {
 }
 
 func TestEvaluateFloatOps(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("multiplication", func(t *testing.T) {
 		result, err := Evaluate(`value * 1.5`, float64(2.0))
 		if err != nil {
@@ -142,6 +147,7 @@ func TestEvaluateFloatOps(t *testing.T) {
 }
 
 func TestEvaluateBooleanOps(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("negation", func(t *testing.T) {
 		result, err := Evaluate(`!value`, true)
 		if err != nil {
@@ -164,6 +170,7 @@ func TestEvaluateBooleanOps(t *testing.T) {
 }
 
 func TestEvaluateListOps(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("size", func(t *testing.T) {
 		result, err := Evaluate(`size(value)`, []any{"a", "b", "c"})
 		if err != nil {
@@ -186,6 +193,7 @@ func TestEvaluateListOps(t *testing.T) {
 }
 
 func TestEvaluateMapOps(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("key access", func(t *testing.T) {
 		result, err := Evaluate(`value.name`, map[string]any{"name": "test", "count": int64(5)})
 		if err != nil {
@@ -198,6 +206,7 @@ func TestEvaluateMapOps(t *testing.T) {
 }
 
 func TestEvaluateTimeHandling(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("timestamp passthrough", func(t *testing.T) {
 		input := time.Date(2025, 6, 15, 10, 30, 0, 0, time.UTC)
 		result, err := Evaluate(`value`, input)
@@ -215,6 +224,7 @@ func TestEvaluateTimeHandling(t *testing.T) {
 }
 
 func TestEvaluateErrors(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("invalid expression", func(t *testing.T) {
 		_, err := Evaluate(`value +`, "hello")
 		if err == nil {

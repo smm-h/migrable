@@ -2,6 +2,7 @@ package engine
 
 import (
 	"errors"
+	"github.com/smm-h/stricttest/go/hygiene"
 	"os"
 	"path/filepath"
 	"strings"
@@ -12,6 +13,7 @@ import (
 )
 
 func TestRollback_Basic(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	// Apply a migration that adds a field, then roll it back.
 	cfg, targetPath := setupProject(t,
 		`title = "My App"
@@ -73,6 +75,7 @@ down = { op = "remove_field", path = "debug" }
 }
 
 func TestRollback_ToPreviousVersion(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	// Apply two migrations, roll back only the last one.
 	cfg, targetPath := setupProject(t,
 		`title = "My App"
@@ -136,6 +139,7 @@ down = { op = "remove_field", path = "log_level" }
 }
 
 func TestRollback_IrreversibleBlock(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	cfg, targetPath := setupProject(t,
 		`title = "My App"
 `,
@@ -183,6 +187,7 @@ down = "irreversible"
 }
 
 func TestRollback_ArrayDownOps(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	// Migration adds two fields; the second has an array-valued down that removes both.
 	cfg, targetPath := setupProject(t,
 		`title = "My App"
@@ -241,6 +246,7 @@ down = [
 }
 
 func TestRollback_AtZeroVersion(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	cfg, _ := setupProject(t,
 		`title = "My App"
 `,
@@ -268,6 +274,7 @@ down = { op = "remove_field", path = "x" }
 }
 
 func TestRollback_MissingMigrationFile(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	// Set _schema_version to a version with no corresponding migration file.
 	cfg, _ := setupProject(t,
 		`_schema_version = "2.0.0"
@@ -296,6 +303,7 @@ down = { op = "remove_field", path = "x" }
 }
 
 func TestRollback_DryRun(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	cfg, targetPath := setupProject(t,
 		`title = "My App"
 `,
@@ -365,6 +373,7 @@ down = { op = "remove_field", path = "debug" }
 }
 
 func TestRollback_FailedDownOp(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	// Use a down op (transform) that will fail because the path doesn't exist.
 	cfg, targetPath := setupProject(t,
 		`title = "My App"
@@ -405,6 +414,7 @@ down = { op = "transform", path = "nonexistent_path", expr = "value + 1" }
 }
 
 func TestRollback_ReverseExecutionOrder(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	// Create a migration where structure adds a field, and data changes its value.
 	// Rollback should reverse data first (restore original value), then structure
 	// (remove the field). This verifies data down ops run before structure down ops.
@@ -475,6 +485,7 @@ down = { op = "set_value", path = "enabled", value = false }
 }
 
 func TestRollback_MultiFileRequiresVersionFile(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 	migrationsDir := filepath.Join(dir, "migrations")
 	os.Mkdir(migrationsDir, 0o755)
@@ -502,6 +513,7 @@ func TestRollback_MultiFileRequiresVersionFile(t *testing.T) {
 }
 
 func TestRollback_IrreversibleMultipleOps(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	// Multiple ops marked irreversible should all be listed.
 	cfg, _ := setupProject(t,
 		`title = "My App"
@@ -547,6 +559,7 @@ down = "irreversible"
 }
 
 func TestRollback_OpsWithoutDown(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	// Ops without down fields should be skipped during rollback.
 	cfg, targetPath := setupProject(t,
 		`title = "My App"

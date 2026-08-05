@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/smm-h/stricttest/go/hygiene"
 	"os"
 	"path/filepath"
 	"strings"
@@ -8,6 +9,7 @@ import (
 )
 
 func TestParse(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	tests := []struct {
 		name    string
 		toml    string
@@ -119,6 +121,7 @@ b = "b.toml"
 }
 
 func TestExpandEnvStrict(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	tests := []struct {
 		name    string
 		input   string
@@ -203,6 +206,7 @@ func TestExpandEnvStrict(t *testing.T) {
 }
 
 func TestLoad_Discovery(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("found in current dir", func(t *testing.T) {
 		dir := t.TempDir()
 		writeFile(t, filepath.Join(dir, configFileName), `migrations_dir = "m"
@@ -307,6 +311,7 @@ app = "app.toml"
 }
 
 func TestParse_EnvExpansionInFiles(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Setenv("TEST_CONFIG_DIR", "/opt/configs")
 
 	toml := `migrations_dir = "m"
@@ -324,6 +329,7 @@ app = "$TEST_CONFIG_DIR/app.toml"
 }
 
 func TestParse_EnvExpansionUnsetError(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	os.Unsetenv("MIGRABLE_TEST_UNSET_VAR")
 
 	toml := `migrations_dir = "m"

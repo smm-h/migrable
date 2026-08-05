@@ -1,11 +1,13 @@
 package ops
 
 import (
+	"github.com/smm-h/stricttest/go/hygiene"
 	"strings"
 	"testing"
 )
 
 func TestExecSetValue(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("overwrites existing value", func(t *testing.T) {
 		doc := mustParse(t, "key = \"old\"\n")
 		err := ExecSetValue(doc, Op{Path: "key", Value: "new"})
@@ -36,6 +38,7 @@ func TestExecSetValue(t *testing.T) {
 }
 
 func TestExecSetValueWhere(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	const servers = `
 [[servers]]
 name = "web"
@@ -132,6 +135,7 @@ port = 6379
 }
 
 func TestExecRemoveWhere(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	const servers = `
 [[servers]]
 name = "web"
@@ -218,6 +222,7 @@ port = 6379
 }
 
 func TestExecAppend(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("adds to existing array", func(t *testing.T) {
 		doc := mustParse(t, "tags = [\"web\", \"prod\"]\n")
 		err := ExecAppend(doc, Op{Path: "tags", Value: "v2"})
@@ -262,6 +267,7 @@ func TestExecAppend(t *testing.T) {
 }
 
 func TestExecMergeDefaults(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("merges missing keys", func(t *testing.T) {
 		doc := mustParse(t, "[server]\nhost = \"localhost\"\n")
 		err := ExecMergeDefaults(doc, Op{
@@ -319,6 +325,7 @@ func TestExecMergeDefaults(t *testing.T) {
 }
 
 func TestExecMergeDefaultsByKey(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	const plugins = `
 [[plugins]]
 name = "auth"

@@ -1,11 +1,13 @@
 package ops
 
 import (
+	"github.com/smm-h/stricttest/go/hygiene"
 	"strings"
 	"testing"
 )
 
 func TestParseMigration_Complete(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	input := []byte(`
 description = "add user settings"
 
@@ -71,6 +73,7 @@ value = "2.0"
 }
 
 func TestParseMigration_StructureOnly(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	input := []byte(`
 [[structure]]
 op = "remove_field"
@@ -89,6 +92,7 @@ path = "old.key"
 }
 
 func TestParseMigration_DataOnly(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	input := []byte(`
 [[data]]
 op = "set_value"
@@ -108,6 +112,7 @@ value = "test"
 }
 
 func TestParseMigration_DescriptionOnly(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	input := []byte(`description = "just a description"`)
 	m, err := ParseMigration(input)
 	if err != nil {
@@ -125,6 +130,7 @@ func TestParseMigration_DescriptionOnly(t *testing.T) {
 }
 
 func TestParseMigration_DownIrreversible(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	input := []byte(`
 [[structure]]
 op = "add_field"
@@ -147,6 +153,7 @@ down = "irreversible"
 }
 
 func TestParseMigration_DownInlineTable(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	input := []byte(`
 [[structure]]
 op = "rename_field"
@@ -181,6 +188,7 @@ down = {op = "rename_field", from = "old.new_name", to = "name"}
 }
 
 func TestParseMigration_DownArray(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	input := []byte(`
 [[structure]]
 op = "move_field"
@@ -211,6 +219,7 @@ down = [
 }
 
 func TestParseMigration_AllStructureOpTypes(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	tests := []struct {
 		name  string
 		toml  string
@@ -325,6 +334,7 @@ path = "deprecated"`,
 }
 
 func TestParseMigration_UnknownOpType(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	input := []byte(`
 [[structure]]
 op = "nonexistent_op"
@@ -340,6 +350,7 @@ path = "x"
 }
 
 func TestParseMigration_MissingRequiredFields(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	tests := []struct {
 		name    string
 		toml    string
@@ -402,6 +413,7 @@ path = "x"`,
 }
 
 func TestParseMigration_MissingOpField(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	input := []byte(`
 [[structure]]
 path = "x"
@@ -416,6 +428,7 @@ path = "x"
 }
 
 func TestParseMigration_InvalidDownString(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	input := []byte(`
 [[structure]]
 op = "remove_field"

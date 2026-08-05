@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"github.com/smm-h/stricttest/go/hygiene"
 	"os"
 	"path/filepath"
 	"strings"
@@ -51,6 +52,7 @@ func setupMultiFileProject(t *testing.T, files map[string]string, fileContents m
 }
 
 func TestMultiFile_BasicMigration(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	files := map[string]string{
 		"config": "config.toml",
 		"themes": "themes.toml",
@@ -111,6 +113,7 @@ default = 14
 }
 
 func TestMultiFile_FileKeyRouting(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	files := map[string]string{
 		"config":      "config.toml",
 		"keybindings": "keybindings.toml",
@@ -164,6 +167,7 @@ default = "ctrl+c"
 }
 
 func TestMultiFile_VersionFile(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	files := map[string]string{
 		"config": "config.toml",
 		"themes": "themes.toml",
@@ -211,6 +215,7 @@ default = "monospace"
 }
 
 func TestMultiFile_CrossFileMoveField(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	files := map[string]string{
 		"config": "config.toml",
 		"themes": "themes.toml",
@@ -255,6 +260,7 @@ to = "themes.dark.foreground"
 }
 
 func TestMultiFile_TransactionalWrite(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	files := map[string]string{
 		"config": "config.toml",
 		"themes": "themes.toml",
@@ -303,6 +309,7 @@ match_mode = "all"
 }
 
 func TestMultiFile_MissingFile(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	files := map[string]string{
 		"config": "config.toml",
 		"themes": "themes.toml",
@@ -341,6 +348,7 @@ default = "sans"
 }
 
 func TestMultiFile_InvalidPathPrefix(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	files := map[string]string{
 		"config": "config.toml",
 		"themes": "themes.toml",
@@ -371,6 +379,7 @@ default = "x"
 }
 
 func TestMultiFile_Rollback(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	files := map[string]string{
 		"config": "config.toml",
 		"themes": "themes.toml",
@@ -456,6 +465,7 @@ down = { op = "remove_field", path = "themes.dark.font_size" }
 }
 
 func TestMultiFile_DryRun(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	files := map[string]string{
 		"config": "config.toml",
 		"themes": "themes.toml",
@@ -542,6 +552,7 @@ default = 14
 }
 
 func TestSplitFileKey(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("single file returns full path unchanged", func(t *testing.T) {
 		key, inner, err := SplitFileKey("ui.theme", []string{"config"})
 		if err != nil {
@@ -604,6 +615,7 @@ func TestSplitFileKey(t *testing.T) {
 }
 
 func TestMultiFile_UntouchedFileNotRewrittenDuringMigrate(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	files := map[string]string{
 		"config": "config.toml",
 		"themes": "themes.toml",
@@ -679,6 +691,7 @@ default = false
 }
 
 func TestMultiFile_UntouchedFileNotRewrittenDuringRollback(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	files := map[string]string{
 		"config": "config.toml",
 		"themes": "themes.toml",

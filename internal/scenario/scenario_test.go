@@ -1,10 +1,14 @@
 package scenario
 
-import "testing"
+import (
+	"github.com/smm-h/stricttest/go/hygiene"
+	"testing"
+)
 
 // --- Normal use cases ---
 
 func TestNormal_AddNewConfigField(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	New(t).
 		SingleFile("config", "config.toml").
 		Input("config", `title = "My App"
@@ -27,6 +31,7 @@ down = { op = "remove_field", path = "debug" }
 }
 
 func TestNormal_RemoveDeprecatedField(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	New(t).
 		SingleFile("config", "config.toml").
 		Input("config", `title = "My App"
@@ -47,6 +52,7 @@ down = { op = "add_field", path = "legacy_mode", type = "bool", default = true }
 }
 
 func TestNormal_RenameKey(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	New(t).
 		SingleFile("config", "config.toml").
 		Input("config", `title = "My App"
@@ -69,6 +75,7 @@ down = { op = "rename_field", from = "log_path", to = "log_file" }
 }
 
 func TestNormal_AddConfigSection(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	New(t).
 		SingleFile("config", "config.toml").
 		Input("config", `_schema_version = "0.0.0"
@@ -92,6 +99,7 @@ down = { op = "drop_collection", path = "database" }
 }
 
 func TestNormal_MergeNewDefaults(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	New(t).
 		SingleFile("config", "config.toml").
 		Input("config", `_schema_version = "0.0.0"
@@ -116,6 +124,7 @@ value = { host = "default.example.com", port = 8080, debug = false }
 }
 
 func TestNormal_DryRunPreview(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	s := New(t).
 		SingleFile("config", "config.toml").
 		Input("config", `title = "My App"
@@ -136,6 +145,7 @@ default = false
 }
 
 func TestScenario_Validate(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	// Migration with a missing down op should produce 1 validation error.
 	New(t).
 		Migration("1.0.0", `description = "Missing down op"
@@ -153,6 +163,7 @@ default = false
 }
 
 func TestScenario_Merge(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	s := New(t).
 		Migration("0.0.0", `description = "initial"
 `)
@@ -184,6 +195,7 @@ down = { op = "remove_field", path = "log_level" }
 }
 
 func TestScenario_Init(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	New(t).
 		Init().
 		AssertSuccess().
@@ -192,6 +204,7 @@ func TestScenario_Init(t *testing.T) {
 }
 
 func TestNormal_MigrationStatus(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	s := New(t).
 		SingleFile("config", "config.toml").
 		Input("config", `_schema_version = "1.0.0"
@@ -231,6 +244,7 @@ default = "z"
 // --- Not-so-normal use cases ---
 
 func TestNotNormal_RollbackBadRelease(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	s := New(t).
 		SingleFile("config", "config.toml").
 		Input("config", `title = "My App"
@@ -268,6 +282,7 @@ down = { op = "remove_field", path = "log_level" }
 }
 
 func TestNotNormal_TransformWithCEL(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	New(t).
 		SingleFile("config", "config.toml").
 		Input("config", `timeout_ms = 5
@@ -288,6 +303,7 @@ down = { op = "transform", path = "timeout_ms", expr = "int(value / 1000)" }
 }
 
 func TestNotNormal_MultiFileMigration(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	New(t).
 		MultiFile(map[string]string{
 			"config": "config.toml",
@@ -322,6 +338,7 @@ default = 14
 }
 
 func TestNotNormal_ConditionalArrayUpdate(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	New(t).
 		SingleFile("config", "config.toml").
 		Input("config", `_schema_version = "0.0.0"
@@ -351,6 +368,7 @@ down = { op = "set_value_where", path = "servers", match_mode = "subset", where 
 }
 
 func TestNotNormal_RawTOMLInjection(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	New(t).
 		SingleFile("config", "config.toml").
 		Input("config", `existing = true
@@ -374,6 +392,7 @@ new_str = "hello"
 }
 
 func TestNotNormal_FreshInstall(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	// No Input call -- file does not exist.
 	New(t).
 		SingleFile("config", "config.toml").
@@ -401,6 +420,7 @@ default = false
 }
 
 func TestNotNormal_CrossFileMove(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	New(t).
 		MultiFile(map[string]string{
 			"config": "config.toml",
@@ -427,6 +447,7 @@ to = "themes.accent"
 }
 
 func TestNotNormal_RegexConditionalUpdate(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	New(t).
 		SingleFile("config", "config.toml").
 		Input("config", `_schema_version = "0.0.0"
@@ -459,6 +480,7 @@ set = { is_prod = true }
 }
 
 func TestNotNormal_MergeDefaultsByKey(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	New(t).
 		SingleFile("config", "config.toml").
 		Input("config", `_schema_version = "0.0.0"
@@ -489,6 +511,7 @@ defaults = [
 }
 
 func TestNotNormal_DescriptionOnlyMigration(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	New(t).
 		SingleFile("config", "config.toml").
 		Input("config", `title = "My App"
@@ -505,6 +528,7 @@ func TestNotNormal_DescriptionOnlyMigration(t *testing.T) {
 // --- Edge cases ---
 
 func TestEdge_AllOpsNoOp(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	// add_field on fields that already exist -- no data change except version bump.
 	New(t).
 		MultiFile(map[string]string{
@@ -533,6 +557,7 @@ default = false
 }
 
 func TestEdge_EscapedDotsInKeys(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	New(t).
 		SingleFile("config", "config.toml").
 		Input("config", `title = "My App"
@@ -554,6 +579,7 @@ down = { op = "remove_field", path = "api\\.v2" }
 }
 
 func TestEdge_IrreversibleBlocksRollback(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	s := New(t).
 		SingleFile("config", "config.toml").
 		Input("config", `title = "My App"
@@ -579,6 +605,7 @@ down = "irreversible"
 }
 
 func TestEdge_FreshInstallFullHistory(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	// No input, 3 migrations building up config from scratch.
 	New(t).
 		SingleFile("config", "config.toml").
@@ -617,6 +644,7 @@ default = "info"
 }
 
 func TestEdge_CrossFileMoveSourceEmpty(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	// Move the only field from themes to config. Source still exists but
 	// should be nearly empty (no _schema_version since config is the version file).
 	New(t).
@@ -645,6 +673,7 @@ to = "config.accent_color"
 }
 
 func TestEdge_NegativeArrayIndex(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	New(t).
 		SingleFile("config", "config.toml").
 		Input("config", `_schema_version = "0.0.0"
@@ -677,6 +706,7 @@ set = { value = 999 }
 }
 
 func TestEdge_ArrayDownOps(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	s := New(t).
 		SingleFile("config", "config.toml").
 		Input("config", `title = "My App"
@@ -715,6 +745,7 @@ down = [
 }
 
 func TestEdge_ConfigOnlySchemaVersion(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	New(t).
 		SingleFile("config", "config.toml").
 		Input("config", `_schema_version = "0.0.0"
@@ -742,6 +773,7 @@ default = false
 }
 
 func TestEdge_RollbackOnlyMigration(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	s := New(t).
 		SingleFile("config", "config.toml").
 		Input("config", `title = "My App"
@@ -778,6 +810,7 @@ down = { op = "remove_field", path = "debug" }
 }
 
 func TestEdge_NotHasKeyNoMatch(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	// Every item has the "role" key, so not_has_key on "role" matches nothing.
 	New(t).
 		SingleFile("config", "config.toml").

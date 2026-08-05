@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"github.com/smm-h/stricttest/go/hygiene"
 	"os"
 	"path/filepath"
 	"strings"
@@ -8,6 +9,7 @@ import (
 )
 
 func TestInit_ScaffoldsProject(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 
 	if err := Init(dir); err != nil {
@@ -49,6 +51,7 @@ func TestInit_ScaffoldsProject(t *testing.T) {
 }
 
 func TestInit_AlreadyInitialized(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 
 	// Create migrable.toml first.
@@ -64,6 +67,7 @@ func TestInit_AlreadyInitialized(t *testing.T) {
 }
 
 func TestInit_IgnoresDotMigrableSubdir(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 
 	// Create .migrable/migrable.toml -- Init should ignore it and proceed.

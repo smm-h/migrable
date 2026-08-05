@@ -3,6 +3,7 @@ package conformance
 import (
 	"bytes"
 	"fmt"
+	"github.com/smm-h/stricttest/go/hygiene"
 	"os"
 	"path/filepath"
 	"testing"
@@ -20,6 +21,7 @@ type conformanceTest struct {
 }
 
 func TestConformance(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	files, err := filepath.Glob("*.toml")
 	if err != nil {
 		t.Fatalf("failed to glob test files: %v", err)

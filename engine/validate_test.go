@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"github.com/smm-h/stricttest/go/hygiene"
 	"os"
 	"path/filepath"
 	"strings"
@@ -8,6 +9,7 @@ import (
 )
 
 func TestValidate_ValidMigration(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 	migration := `description = "add theme field"
 
@@ -36,6 +38,7 @@ down = {op = "remove_field", path = "ui.theme"}
 }
 
 func TestValidate_MissingDownOp(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 	migration := `description = "missing down"
 
@@ -60,6 +63,7 @@ default = "dark"
 }
 
 func TestValidate_TypeMismatch(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 	// Declare type as "string" but provide integer default.
 	migration := `description = "type mismatch"
@@ -86,6 +90,7 @@ down = {op = "remove_field", path = "ui.count"}
 }
 
 func TestValidate_MissingDescription(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 	migration := `[[structure]]
 op = "add_field"
@@ -112,6 +117,7 @@ down = {op = "remove_field", path = "ui.theme"}
 }
 
 func TestValidate_MultipleFilesCollectsAll(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 
 	// File 1: missing down op
@@ -159,6 +165,7 @@ down = {op = "remove_field", path = "c"}
 }
 
 func TestValidate_StagingFilesInNext(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 	nextDir := filepath.Join(dir, "next")
 	os.MkdirAll(nextDir, 0o755)
@@ -188,6 +195,7 @@ type = "string"
 }
 
 func TestValidate_EmptyDirectory(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 
 	result, err := Validate(dir)
@@ -206,6 +214,7 @@ func TestValidate_EmptyDirectory(t *testing.T) {
 }
 
 func TestValidate_LocalDateTimeCorrectDefault(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 	migration := `description = "local datetime test"
 
@@ -228,6 +237,7 @@ down = {op = "remove_field", path = "event.created_at"}
 }
 
 func TestValidate_LocalDateTimeWrongDefault(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 	migration := `description = "local datetime mismatch"
 
@@ -253,6 +263,7 @@ down = {op = "remove_field", path = "event.created_at"}
 }
 
 func TestValidate_LocalDateCorrectDefault(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 	migration := `description = "local date test"
 
@@ -275,6 +286,7 @@ down = {op = "remove_field", path = "event.date"}
 }
 
 func TestValidate_LocalDateWrongDefault(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 	migration := `description = "local date mismatch"
 
@@ -300,6 +312,7 @@ down = {op = "remove_field", path = "event.date"}
 }
 
 func TestValidate_LocalTimeCorrectDefault(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 	migration := `description = "local time test"
 
@@ -322,6 +335,7 @@ down = {op = "remove_field", path = "event.time"}
 }
 
 func TestValidate_LocalTimeWrongDefault(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 	migration := `description = "local time mismatch"
 
@@ -347,6 +361,7 @@ down = {op = "remove_field", path = "event.time"}
 }
 
 func TestValidate_InvalidTOML(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 	os.WriteFile(filepath.Join(dir, "1.0.0.toml"), []byte("this is not { valid toml"), 0o644)
 

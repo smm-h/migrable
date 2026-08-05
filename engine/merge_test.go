@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"github.com/smm-h/stricttest/go/hygiene"
 	"os"
 	"path/filepath"
 	"strings"
@@ -10,6 +11,7 @@ import (
 )
 
 func TestMerge_TwoStagingFiles(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 	nextDir := filepath.Join(dir, "next")
 	os.MkdirAll(nextDir, 0o755)
@@ -66,6 +68,7 @@ down = {op = "remove_field", path = "server.timeout"}
 }
 
 func TestMerge_EmptyNext(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 	nextDir := filepath.Join(dir, "next")
 	os.MkdirAll(nextDir, 0o755)
@@ -80,6 +83,7 @@ func TestMerge_EmptyNext(t *testing.T) {
 }
 
 func TestMerge_NextNotExist(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 
 	_, err := Merge(dir, "1.0.0")
@@ -92,6 +96,7 @@ func TestMerge_NextNotExist(t *testing.T) {
 }
 
 func TestMerge_VersionCollision(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 	nextDir := filepath.Join(dir, "next")
 	os.MkdirAll(nextDir, 0o755)
@@ -112,6 +117,7 @@ func TestMerge_VersionCollision(t *testing.T) {
 }
 
 func TestMerge_InvalidStagingFile(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 	nextDir := filepath.Join(dir, "next")
 	os.MkdirAll(nextDir, 0o755)
@@ -125,6 +131,7 @@ func TestMerge_InvalidStagingFile(t *testing.T) {
 }
 
 func TestMerge_AlphabeticalOrder(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 	nextDir := filepath.Join(dir, "next")
 	os.MkdirAll(nextDir, 0o755)
@@ -179,6 +186,7 @@ down = {op = "remove_field", path = "a"}
 }
 
 func TestMerge_NextCleanedAfterMerge(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 	nextDir := filepath.Join(dir, "next")
 	os.MkdirAll(nextDir, 0o755)
@@ -210,6 +218,7 @@ down = {op = "remove_field", path = "x"}
 }
 
 func TestMerge_LocalDateDefault(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 	nextDir := filepath.Join(dir, "next")
 	os.MkdirAll(nextDir, 0o755)
@@ -256,6 +265,7 @@ down = {op = "remove_field", path = "user.birthday"}
 }
 
 func TestMerge_StructureAndDataFromDifferentFiles(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 	nextDir := filepath.Join(dir, "next")
 	os.MkdirAll(nextDir, 0o755)

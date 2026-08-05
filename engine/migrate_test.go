@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"github.com/smm-h/stricttest/go/hygiene"
 	"os"
 	"path/filepath"
 	"strings"
@@ -46,6 +47,7 @@ func setupProject(t *testing.T, targetContent string, migrations map[string]stri
 }
 
 func TestMigrate_SingleMigration(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	cfg, targetPath := setupProject(t,
 		`title = "My App"
 `,
@@ -107,6 +109,7 @@ default = false
 }
 
 func TestMigrate_MultipleMigrationsInOrder(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	cfg, targetPath := setupProject(t,
 		`title = "My App"
 `,
@@ -182,6 +185,7 @@ value = true
 }
 
 func TestMigrate_SkipsAlreadyApplied(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	cfg, _ := setupProject(t,
 		`_schema_version = "1.0.0"
 title = "My App"
@@ -224,6 +228,7 @@ default = "info"
 }
 
 func TestMigrate_DryRunDoesNotWrite(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	cfg, targetPath := setupProject(t,
 		`title = "My App"
 `,
@@ -285,6 +290,7 @@ default = false
 }
 
 func TestMigrate_InvalidTargetTOML(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	cfg, _ := setupProject(t,
 		`this is not valid toml [[[
 `,
@@ -310,6 +316,7 @@ default = "y"
 }
 
 func TestMigrate_FailedOpNoPartialWrite(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	cfg, targetPath := setupProject(t,
 		`title = "My App"
 `,
@@ -339,6 +346,7 @@ match_mode = "all"
 }
 
 func TestMigrate_FreshInstall(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	// Target file doesn't exist -- migrations applied from scratch.
 	cfg, targetPath := setupProject(t,
 		"", // empty string means don't create the file
@@ -401,6 +409,7 @@ default = false
 }
 
 func TestMigrate_AlreadyUpToDate(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	cfg, _ := setupProject(t,
 		`_schema_version = "2.0.0"
 title = "My App"
@@ -442,6 +451,7 @@ default = "w"
 }
 
 func TestMigrate_VersionTracking(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	cfg, targetPath := setupProject(t,
 		`title = "My App"
 `,
@@ -496,6 +506,7 @@ default = false
 }
 
 func TestMigrate_StructureAndDataOps(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	cfg, targetPath := setupProject(t,
 		`title = "My App"
 `,
@@ -546,6 +557,7 @@ value = "Updated App"
 }
 
 func TestMigrate_MultiFileRequiresVersionFile(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 	migrationsDir := filepath.Join(dir, "migrations")
 	os.Mkdir(migrationsDir, 0o755)
@@ -569,6 +581,7 @@ func TestMigrate_MultiFileRequiresVersionFile(t *testing.T) {
 }
 
 func TestMigrate_Descriptions(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	cfg, _ := setupProject(t,
 		`title = "My App"
 `,
@@ -599,6 +612,7 @@ default = false
 }
 
 func TestMigrate_InvalidSchemaVersion(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	cfg, _ := setupProject(t,
 		`_schema_version = "not-a-version"
 title = "My App"

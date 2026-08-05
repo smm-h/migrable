@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"github.com/smm-h/stricttest/go/hygiene"
 	"os"
 	"path/filepath"
 	"strings"
@@ -8,6 +9,7 @@ import (
 )
 
 func TestDiscoverMigrations(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	tests := []struct {
 		name     string
 		files    []string
@@ -85,6 +87,7 @@ func TestDiscoverMigrations(t *testing.T) {
 }
 
 func TestDiscoverMigrations_SkipsSubdirectories(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 	os.WriteFile(filepath.Join(dir, "1.0.0.toml"), []byte("# ok\n"), 0o644)
 	os.Mkdir(filepath.Join(dir, "next"), 0o755)
@@ -103,6 +106,7 @@ func TestDiscoverMigrations_SkipsSubdirectories(t *testing.T) {
 }
 
 func TestDiscoverMigrations_SkipsNonToml(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	dir := t.TempDir()
 	os.WriteFile(filepath.Join(dir, "1.0.0.toml"), []byte("# ok\n"), 0o644)
 	os.WriteFile(filepath.Join(dir, "readme.md"), []byte("# not a migration\n"), 0o644)
@@ -117,6 +121,7 @@ func TestDiscoverMigrations_SkipsNonToml(t *testing.T) {
 }
 
 func TestDiscoverMigrations_NonexistentDir(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	_, err := DiscoverMigrations("/nonexistent/path/that/does/not/exist")
 	if err == nil {
 		t.Fatal("expected error for nonexistent directory, got nil")

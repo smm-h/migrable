@@ -1,6 +1,7 @@
 package ops
 
 import (
+	"github.com/smm-h/stricttest/go/hygiene"
 	"strings"
 	"testing"
 
@@ -38,6 +39,7 @@ func assertNodeNil(t *testing.T, doc *tomledit.DocumentNode, path string) {
 }
 
 func TestExecAddField(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("creates field with default", func(t *testing.T) {
 		doc := mustParse(t, "existing = true\n")
 		err := ExecAddField(doc, Op{Path: "new_key", Default: "hello"})
@@ -76,6 +78,7 @@ func TestExecAddField(t *testing.T) {
 }
 
 func TestExecRemoveField(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("removes existing field", func(t *testing.T) {
 		doc := mustParse(t, "keep = 1\nremove_me = 2\n")
 		err := ExecRemoveField(doc, Op{Path: "remove_me"})
@@ -97,6 +100,7 @@ func TestExecRemoveField(t *testing.T) {
 }
 
 func TestExecRenameField(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("renames key", func(t *testing.T) {
 		doc := mustParse(t, "[server]\nhost = \"localhost\"\nport = 8080\n")
 		err := ExecRenameField(doc, Op{From: "server.host", To: "hostname"})
@@ -128,6 +132,7 @@ func TestExecRenameField(t *testing.T) {
 }
 
 func TestExecMoveField(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("moves value between tables", func(t *testing.T) {
 		doc := mustParse(t, "[source]\nkey = \"value\"\n[dest]\nother = 1\n")
 		err := ExecMoveField(doc, Op{From: "source.key", To: "dest.key"})
@@ -169,6 +174,7 @@ func TestExecMoveField(t *testing.T) {
 }
 
 func TestExecAddCollection(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("creates new table with fields", func(t *testing.T) {
 		doc := mustParse(t, "existing = true\n")
 		err := ExecAddCollection(doc, Op{
@@ -210,6 +216,7 @@ func TestExecAddCollection(t *testing.T) {
 }
 
 func TestExecDropCollection(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("removes existing table", func(t *testing.T) {
 		doc := mustParse(t, "[keep]\na = 1\n[remove]\nb = 2\n")
 		err := ExecDropCollection(doc, Op{Path: "remove"})
@@ -231,6 +238,7 @@ func TestExecDropCollection(t *testing.T) {
 }
 
 func TestExecuteDispatch(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("dispatches structure ops", func(t *testing.T) {
 		doc := mustParse(t, "")
 		err := Execute(doc, Op{Type: OpAddField, Path: "key", Default: "val"})

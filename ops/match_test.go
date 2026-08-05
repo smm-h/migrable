@@ -1,8 +1,12 @@
 package ops
 
-import "testing"
+import (
+	"github.com/smm-h/stricttest/go/hygiene"
+	"testing"
+)
 
 func TestMatchSubset(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	item := map[string]any{"name": "prod", "host": "db.example.com", "port": int64(5432)}
 
 	t.Run("matches when item has all where keys", func(t *testing.T) {
@@ -42,6 +46,7 @@ func TestMatchSubset(t *testing.T) {
 }
 
 func TestMatchExact(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	item := map[string]any{"name": "prod", "port": int64(5432)}
 
 	t.Run("matches with exactly same keys", func(t *testing.T) {
@@ -67,6 +72,7 @@ func TestMatchExact(t *testing.T) {
 }
 
 func TestMatchAll(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("always matches", func(t *testing.T) {
 		item := map[string]any{"anything": "value"}
 		if !Matches(item, nil, MatchAll, 0, 1) {
@@ -83,6 +89,7 @@ func TestMatchAll(t *testing.T) {
 }
 
 func TestMatchIndex(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	item := map[string]any{"name": "a"}
 
 	t.Run("positive index matches", func(t *testing.T) {
@@ -123,6 +130,7 @@ func TestMatchIndex(t *testing.T) {
 }
 
 func TestMatchHasKey(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	item := map[string]any{"name": "prod", "port": int64(5432)}
 
 	t.Run("key present", func(t *testing.T) {
@@ -139,6 +147,7 @@ func TestMatchHasKey(t *testing.T) {
 }
 
 func TestMatchNotHasKey(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	item := map[string]any{"name": "prod", "port": int64(5432)}
 
 	t.Run("key present", func(t *testing.T) {
@@ -155,6 +164,7 @@ func TestMatchNotHasKey(t *testing.T) {
 }
 
 func TestMatchRegex(t *testing.T) {
+	hygiene.Isolate(t, hygiene.Preserve(hygiene.GoPath, hygiene.GoModCache, hygiene.GoCache))
 	t.Run("string pattern matches", func(t *testing.T) {
 		item := map[string]any{"name": "prod-db-01"}
 		where := map[string]any{"name": "prod-.*"}
