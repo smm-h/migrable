@@ -1,6 +1,7 @@
 {
   "commands": {
     "init": {
+      "effect": "mutating",
       "help": "Scaffold migrable.toml and migrations directory",
       "name": "init"
     },
@@ -11,18 +12,13 @@
           "name": "version"
         }
       ],
+      "effect": "mutating",
       "help": "Combine next/ staging files into a versioned migration",
       "name": "merge"
     },
     "migrate": {
+      "effect": "mutating",
       "flags": [
-        {
-          "default": false,
-          "help": "preview changes without writing",
-          "name": "dry-run",
-          "negatable": true,
-          "type": "bool"
-        },
         {
           "default": false,
           "help": "roll back the most recently applied migration",
@@ -35,10 +31,12 @@
       "name": "migrate"
     },
     "status": {
+      "effect": "read_only",
       "help": "Show current version and pending migrations",
       "name": "status"
     },
     "validate": {
+      "effect": "read_only",
       "help": "Validate migration files",
       "name": "validate"
     }
@@ -50,31 +48,44 @@
       "deprecated": {},
       "env_prefix": null,
       "global_flags": [],
-      "groups": {}
+      "groups": {},
+      "tag_contracts": {}
     },
     "arg": {
+      "choices": null,
+      "default": null,
       "required": true,
+      "type": "str",
       "variadic": false
     },
     "command": {
       "args": [],
+      "constraints": [],
       "flags": [],
-      "passthrough": false
+      "hidden": false,
+      "interactive": false,
+      "passthrough": false,
+      "tags": []
     },
     "flag": {
       "choices": null,
       "default": null,
       "env": null,
+      "env_separator": null,
       "hidden": false,
       "negatable": null,
       "repeatable": false,
-      "short": null
+      "short": null,
+      "unique": false
     },
     "group": {
       "commands": {},
       "deprecated": {},
-      "groups": {}
-    }
+      "groups": {},
+      "hidden": false,
+      "tags": []
+    },
+    "schema_version": 1
   },
   "deprecated": {
     "man": "Use 'migrable --help' for command documentation."
@@ -85,24 +96,11 @@
       "help": "path to configuration directory",
       "name": "config-dir",
       "type": "str"
-    },
-    {
-      "default": false,
-      "help": "suppress non-error output",
-      "name": "quiet",
-      "negatable": true,
-      "type": "bool"
-    },
-    {
-      "default": false,
-      "help": "enable verbose output",
-      "name": "verbose",
-      "negatable": true,
-      "type": "bool"
     }
   ],
   "help": "Declarative config file migrations for TOML",
   "name": "migrable",
   "project_id": "github.com/smm-h/migrable",
-  "version": "0.6.1-0.20260529221630-9ac61780bd10+dirty"
+  "schema_version": 1,
+  "version": "0.6.0"
 }

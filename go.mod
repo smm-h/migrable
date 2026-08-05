@@ -6,7 +6,8 @@ require (
 	github.com/Masterminds/semver/v3 v3.5.0
 	github.com/google/cel-go v0.28.0
 	github.com/smm-h/go-toml-edit v0.2.2
-	github.com/smm-h/strictcli/go v0.23.0
+	github.com/smm-h/strictcli/go v0.29.0
+	github.com/smm-h/stricttest/go v0.1.1
 	google.golang.org/protobuf v1.36.10
 )
 

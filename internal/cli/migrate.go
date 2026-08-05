@@ -13,9 +13,9 @@ import (
 
 func runMigrate(ctx *strictcli.Context, kwargs map[string]interface{}) strictcli.Outcome {
 	configDir := kwargs["config_dir"].(string)
-	quiet := kwargs["quiet"].(bool)
-	verbose := kwargs["verbose"].(bool)
-	dryRun := kwargs["dry_run"].(bool)
+	quiet := ctx.Quiet()
+	verbose := ctx.Verbose()
+	dryRun := ctx.DryRun()
 	rollback := kwargs["rollback"].(bool)
 
 	cfg, err := config.Load(configDir)

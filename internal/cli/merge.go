@@ -13,7 +13,7 @@ import (
 
 func runMerge(ctx *strictcli.Context, kwargs map[string]interface{}) strictcli.Outcome {
 	configDir := kwargs["config_dir"].(string)
-	quiet := kwargs["quiet"].(bool)
+	quiet := ctx.Quiet()
 	version := kwargs["version"].(string)
 
 	// Validate semver.
