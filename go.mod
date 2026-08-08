@@ -1,3 +1,4 @@
+// Deprecated: retired; superseded by strictspec.
 module github.com/smm-h/migrable
 
 go 1.25.7
@@ -19,3 +20,8 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20240826202546-f6391c0de4c7 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240826202546-f6391c0de4c7 // indirect
 )
+
+// The module is retired; use strictspec instead. The closed interval covers
+// every published version, including the proxy-only v0.0.0 and this final
+// v0.7.0 release itself.
+retract [v0.0.0, v0.7.0]
