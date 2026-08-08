@@ -2,11 +2,25 @@
 format_version = 1
 # Version bump type: patch, minor, major, infra, or prerelease
 #   prerelease: advance an existing pre-release (0.6.0-beta.0 -> -beta.1)
-bump = ""
+bump = "minor"
 # Short description of this release (required)
-description = ""
+description = "Retirement release: migrable is superseded by strictspec."
 # Optional context explaining why these changes were made
-context = ""
+context = """
+This is the last release migrable will ever make. The project is retired in
+favour of strictspec, which covers the same ground.
+
+The release carries the pending work of the 0.6.0 cycle (the strictcli reserved
+flag quartet and effect classification, the go-strictcli v0.17.0 BoolFlag
+defaults, and the `rlsbl dev install` fix) plus the retirement itself: go.mod
+gains a `// Deprecated:` module marker and `retract [v0.0.0, v0.7.0]`, a closed
+interval that covers every published version including the proxy-only v0.0.0
+and this v0.7.0 release itself. The npm package is deprecated and the PyPI
+releases are yanked; the GitHub repository is archived afterwards.
+
+Existing consumers with pinned dependencies are unaffected -- retraction is
+advisory and does not remove artifacts.
+"""
 # Pre-release channel: alpha, beta, rc, or stable (ordered;
 # demotion is an error). With patch/minor/major it ENTERS the
 # channel (0.5.2 + minor + alpha -> 0.6.0-alpha.0); with
