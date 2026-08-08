@@ -12,6 +12,8 @@ nav_order: 2
 
 Combine next/ staging files into a versioned migration
 
+**Effect:** mutating
+
 ## Arguments
 
 | Name | Required | Description |

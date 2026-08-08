@@ -11,3 +11,5 @@ nav_order: 4
 # migrable status
 
 Show current version and pending migrations
+
+**Effect:** read_only

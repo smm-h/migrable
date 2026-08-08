@@ -12,6 +12,8 @@ nav_order: 3
 
 Run pending migrations
 
+**Effect:** mutating
+
 ## Flags
 
 | Name | Short | Type | Default | Env | Description |

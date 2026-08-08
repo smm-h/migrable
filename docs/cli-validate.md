@@ -11,3 +11,5 @@ nav_order: 5
 # migrable validate
 
 Validate migration files
+
+**Effect:** read_only

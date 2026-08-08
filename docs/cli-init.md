@@ -11,3 +11,5 @@ nav_order: 1
 # migrable init
 
 Scaffold migrable.toml and migrations directory
+
+**Effect:** mutating

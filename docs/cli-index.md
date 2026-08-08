@@ -22,3 +22,24 @@ Version: :-: var key="project.version"
 - [migrate](cli-migrate.html) -- Run pending migrations
 - [status](cli-status.html) -- Show current version and pending migrations
 - [validate](cli-validate.html) -- Validate migration files
+
+## Global flags
+
+| Name | Short | Type | Default | Env | Description |
+| --- | --- | --- | --- | --- | --- |
+| `--config-dir` |  | str |  |  | path to configuration directory |
+
+## Framework flags
+
+These flags are owned by the strictcli framework, not by the app. No command may declare a flag with one of these names, and each is recognized anywhere on the command line.
+
+| Flag | Effect |
+| --- | --- |
+| `--dry-run` | Preview mode: no mutation runs. The framework prints a log of every effect the command would have performed. |
+| `--approve-consequential` | Skips the confirmation prompt a consequential command shows before it runs. |
+| `--quiet` | Hides informational output. Warnings, errors, structured data and the dry-run log are never suppressed. |
+| `--verbose` | Shows debug output. `--quiet` wins when both are passed. |
+
+## Deprecated
+
+- `man` -- Use 'migrable --help' for command documentation.
