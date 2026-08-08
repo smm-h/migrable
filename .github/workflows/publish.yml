@@ -274,7 +274,14 @@ jobs:
         # Full install (devDependencies included): `npm publish` runs the
         # package's prepack script, which for a TypeScript package compiles
         # with the dev toolchain. A bare checkout has none of it.
-        run: npm ci
+        #
+        # --ignore-scripts: this package's postinstall (install.js) downloads
+        # the release binary for the version in package.json. That asset is
+        # uploaded by the `go` job, which runs in PARALLEL with this one, so
+        # running the script here races it and 404s. The published tarball
+        # only ships install.js and the bin/ shim, so skipping install scripts
+        # changes nothing about what is packed.
+        run: npm ci --ignore-scripts
       - name: Check if already published
         id: check-npm
         run: |
