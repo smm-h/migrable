@@ -1,6 +1,6 @@
 {
   "name": "migrable",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "base_url": "https://migrable.smmh.dev",
   "source": [
     {
@@ -20,7 +20,7 @@
   "output": "docs/_build/",
   "versions": [
     {
-      "version": "0.7.0",
+      "version": "0.7.1",
       "indexed": true
     }
   ],
