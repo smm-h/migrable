@@ -15,8 +15,9 @@ flag quartet and effect classification, the go-strictcli v0.17.0 BoolFlag
 defaults, and the `rlsbl dev install` fix) plus the retirement itself: go.mod
 gains a `// Deprecated:` module marker and `retract [v0.0.0, v0.7.0]`, a closed
 interval that covers every published version including the proxy-only v0.0.0
-and this v0.7.0 release itself. The npm package is deprecated and the PyPI
-releases are yanked; the GitHub repository is archived afterwards.
+and this v0.7.0 release itself. The npm package is deprecated; the PyPI
+releases are pending a manual yank. The GitHub repository is archived
+afterwards.
 
 Existing consumers with pinned dependencies are unaffected -- retraction is
 advisory and does not remove artifacts.
