@@ -2,7 +2,7 @@
   "schema_version": 1,
   "name": "migrable",
   "slug": "migrable",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "",
   "language": "go",
   "base_url": "https://migrable.smmh.dev",
@@ -64,5 +64,5 @@
     }
   ],
   "posts": [],
-  "last_gen": "2026-07-11T12:54:16.894238+00:00"
+  "last_gen": "2026-08-09T12:07:27.997492+00:00"
 }
