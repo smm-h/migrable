@@ -21,7 +21,9 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240826202546-f6391c0de4c7 // indirect
 )
 
-// The module is retired; use strictspec instead. The closed interval covers
-// every published version, including the proxy-only v0.0.0 and this final
-// v0.7.0 release itself.
-retract [v0.0.0, v0.7.0]
+// The module is retired; use strictspec instead. The closed interval starts at
+// v0.0.0-0 (the lowest possible pre-release, so pseudo-versions of untagged
+// commits are inside it too) and ends at this final v0.7.1 release itself, so
+// every published version and every proxy-synthesised pseudo-version below it
+// is retracted.
+retract [v0.0.0-0, v0.7.1]
